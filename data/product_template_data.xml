@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="producto_categoria_1" model="product.category">
+        <field name="parent_id" ref="product.product_category_1"/>
+        <field name="name">Alimentos Nutricionales</field>
+        <field name="property_cost_method">average</field>
+        <field name="property_valuation">real_time</field>
+        <field name="property_stock_valuation_account_id" ref="agro.account_110302001"/>
+        <field name="property_account_income_categ_id" ref="agro.account_4010101007"/>
+        <field name="property_stock_account_output_categ_id" ref="agro.account_5010101004"/>
+        <field name="property_account_expense_categ_id" ref="agro.account_110301003"/>
+        <field name="property_stock_account_input_categ_id" ref="agro.account_110301003"/>
+    </record>
+
+    <record id="producto_alimento_nutri_001" model="product.template">
+        <field name="name">Arvejas envainadas</field>
+        <field name="standard_price">3</field>
+        <field name="list_price">6.50</field>
+        <field name="detailed_type">product</field>
+        <field name="image_1920" type="base64" file="agro/static/producto_alimento_nutri_001.png"/>
+        <field name="categ_id" ref="producto_categoria_1"/>
+        <field name="tracking">lot</field>
+        <field name="default_code">ALNU001</field>
+        <field name="uom_id" search="[('name', '=', 'lb')]"/>
+        <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <record id="producto_alimento_nutri_002" model="product.template">
+        <field name="name">Frijol de caritas</field>
+        <field name="standard_price">2</field>
+        <field name="list_price">4.50</field>
+        <field name="detailed_type">product</field>
+        <field name="image_1920" type="base64" file="agro/static/producto_alimento_nutri_002.png"/>
+        <field name="categ_id" ref="producto_categoria_1"/>
+        <field name="tracking">lot</field>
+        <field name="default_code">ALNU002</field>
+        <field name="uom_id" search="[('name', '=', 'lb')]"/>
+        <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <record id="producto_alimento_nutri_003" model="product.template">
+        <field name="name">Lechuga mantequilla</field>
+        <field name="standard_price">10</field>
+        <field name="list_price">15.50</field>
+        <field name="detailed_type">product</field>
+        <field name="image_1920" type="base64" file="agro/static/producto_alimento_nutri_003.png"/>
+        <field name="categ_id" ref="producto_categoria_1"/>
+        <field name="tracking">lot</field>
+        <field name="default_code">ALNU003</field>
+        <field name="uom_id" search="[('name', '=', 'lb')]"/>
+        <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <record id="producto_alimento_nutri_004" model="product.template">
+        <field name="name">Cerezas rojas</field>
+        <field name="standard_price">7</field>
+        <field name="list_price">15.2</field>
+        <field name="detailed_type">product</field>
+        <field name="image_1920" type="base64" file="agro/static/producto_alimento_nutri_004.png"/>
+        <field name="categ_id" ref="producto_categoria_1"/>
+        <field name="tracking">lot</field>
+        <field name="default_code">ALNU004</field>
+        <field name="uom_id" search="[('name', '=', 'lb')]"/>
+        <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <record id="producto_alimento_nutri_005" model="product.template">
+        <field name="name">Nueces</field>
+        <field name="standard_price">108</field>
+        <field name="list_price">25</field>
+        <field name="detailed_type">product</field>
+        <field name="image_1920" type="base64" file="agro/static/producto_alimento_nutri_005.png"/>
+        <field name="categ_id" ref="producto_categoria_1"/>
+        <field name="tracking">lot</field>
+        <field name="default_code">ALNU005</field>
+        <field name="uom_id" search="[('name', '=', 'lb')]"/>
+        <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+</odoo>

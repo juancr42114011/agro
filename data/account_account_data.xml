@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="0">
+
+    <record id="account_110302001" model="account.account">
+      <field name="code">1-1-03-02-001</field>
+      <field name="name">Inventario de Alimentos Nutricionales</field>
+      <field name="user_type_id" ref="account.data_account_type_current_assets" />
+      <field name="company_id" ref="base.main_company"/>
+      <field name="create_asset">no</field>
+      <field name="reconcile" eval="False"/>
+    </record>
+
+    <record id="account_4010101007" model="account.account">
+      <field name="code">4-01-01-01-007</field>
+      <field name="name">Venta de Alimentos Nutricionales</field>
+      <field name="user_type_id" ref="account.data_account_type_revenue" />
+      <field name="company_id" ref="base.main_company"/>
+      <field name="create_asset">no</field>
+      <field name="reconcile" eval="False"/>
+    </record>
+
+    <record id="account_5010101004" model="account.account">
+      <field name="code">5-01-01-01-004</field>
+      <field name="name">Costo de Alimentos Nutricionales</field>
+      <field name="user_type_id" ref="account.data_account_type_direct_costs" />
+      <field name="company_id" ref="base.main_company"/>
+      <field name="create_asset">no</field>
+      <field name="reconcile" eval="False"/>
+    </record>
+
+    <record id="account_110301003" model="account.account">
+      <field name="code">1-1-03-01-003</field>
+      <field name="name">Transito de Alimentos Nutricionales</field>
+      <field name="user_type_id" ref="account.data_account_type_current_assets" />
+      <field name="company_id" ref="base.main_company"/>
+      <field name="create_asset">no</field>
+      <field name="reconcile" eval="False"/>
+    </record>
+
+  </data>
+</odoo>

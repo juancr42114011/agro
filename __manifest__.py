@@ -21,13 +21,16 @@
     'version': '0.7',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['stock_account','account_asset'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'data/account_account_data.xml',
+        'data/product_template_data.xml',
+        'data/product_pricelist_data.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
