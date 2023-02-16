@@ -31,6 +31,7 @@
         'data/account_account_data.xml',
         'data/product_template_data.xml',
         'data/product_pricelist_data.xml',
+        'data/account_journal_data.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
