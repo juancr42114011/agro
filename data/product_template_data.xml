@@ -25,6 +25,12 @@
         <field name="uom_id" search="[('name', '=', 'lb')]"/>
         <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
         <field name="company_id" ref="base.main_company"/>
+        <field name="use_expiration_date">True</field>
+        <field name="expiration_time">10</field>
+        <field name="use_time">4</field>
+        <field name="removal_time">3</field>
+        <field name="alert_time">1</field>
+        
     </record>
 
     <record id="producto_alimento_nutri_002" model="product.template">
@@ -39,6 +45,11 @@
         <field name="uom_id" search="[('name', '=', 'lb')]"/>
         <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
         <field name="company_id" ref="base.main_company"/>
+        <field name="use_expiration_date">True</field>
+        <field name="expiration_time">10</field>
+        <field name="use_time">4</field>
+        <field name="removal_time">3</field>
+        <field name="alert_time">1</field>        
     </record>
 
     <record id="producto_alimento_nutri_003" model="product.template">
@@ -53,6 +64,11 @@
         <field name="uom_id" search="[('name', '=', 'lb')]"/>
         <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
         <field name="company_id" ref="base.main_company"/>
+        <field name="use_expiration_date">True</field>
+        <field name="expiration_time">10</field>
+        <field name="use_time">4</field>
+        <field name="removal_time">3</field>
+        <field name="alert_time">1</field>
     </record>
 
     <record id="producto_alimento_nutri_004" model="product.template">
@@ -67,6 +83,11 @@
         <field name="uom_id" search="[('name', '=', 'lb')]"/>
         <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
         <field name="company_id" ref="base.main_company"/>
+        <field name="use_expiration_date">True</field>
+        <field name="expiration_time">10</field>
+        <field name="use_time">4</field>
+        <field name="removal_time">3</field>
+        <field name="alert_time">1</field>
     </record>
 
     <record id="producto_alimento_nutri_005" model="product.template">
@@ -81,6 +102,11 @@
         <field name="uom_id" search="[('name', '=', 'lb')]"/>
         <field name="uom_po_id" search="[('name', '=', 'lb')]"/>
         <field name="company_id" ref="base.main_company"/>
+        <field name="use_expiration_date">True</field>
+        <field name="expiration_time">10</field>
+        <field name="use_time">4</field>
+        <field name="removal_time">3</field>
+        <field name="alert_time">1</field>
     </record>
 
 </odoo>
