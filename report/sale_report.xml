@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="etiqueta_ali_nu_3_x_2_01">
+            <t t-call="web.html_container">
+                <t t-if="dicc_products" >
+                    <t t-foreach="dicc_products" t-as="llave">
+                        <t t-foreach="dicc_products[llave]" t-as="posicion">
+                            <div class="page">
+                                <style>
+                                table {
+                                    margin-bottom: 0px;
+                                    margin-top: 0px;
+                                    height:68px;
+                                    width:100%;
+                                    align:center;
+                                }
+                                .centered {
+                                    <!-- position: absolute; /* or absolute */ -->
+                                    top: 5%;
+                                    left: 5%;
+                                }
+                                </style>
+                                <!-- Etiqueta sin precio -->
+                                <table style="margin-top:0.12mm" class="centered">
+                                    <tr>
+                                        <td align="center"><font  style="font-size: 8px; bold:True"><span t-esc="posicion['codigo']"/></font></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center"><font style="font-size: 5px"><span t-esc="posicion['descripcion']" style="align:center"/></font></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" ><div  t-esc="posicion['codigo_barras']" t-options="{'widget': 'barcode','width': 600, 'height': 150, 'img_style': 'width:70px;height:20px;'}"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </t>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="action_report_sale_ali_nutri_label_01" model="ir.actions.report">
+            <field name="name">3 x 2 Alimentos Nutricionales</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">agro.etiqueta_ali_nu_3_x_2_01</field>
+            <field name="report_file">agro.etiqueta_ali_nu_3_x_2_01</field>
+            <field name="paperformat_id" ref="imporgesa.paperformat_label_code_price_sheet"/>
+            <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_sale_order"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>

@@ -21,7 +21,7 @@
     'version': '0.7',
 
     # any module necessary for this one to work correctly
-    'depends': ['stock_account','account_asset'],
+    'depends': ['imporgesa',],
 
     # always loaded
     'data': [
@@ -32,6 +32,7 @@
         'data/product_template_data.xml',
         'data/product_pricelist_data.xml',
         'data/account_journal_data.xml',
+        'report/sale_report.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
