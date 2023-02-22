@@ -77,7 +77,13 @@
                                                 <td style="text-align: left;">Q. <span t-esc="posicion['precio']" style="align:center"/></td>
                                                 <td style="text-align: right;">Cant. <span t-esc="posicion['cantidad']"/> <span t-esc="posicion['uom']"/></td>
                                             </tr>
-                                            <tr><td colspan="2">Consumir antes de: <span t-esc="posicion['consumir_antes_de']" style="align:center" t-options="{'widget': 'date'}"/></td></tr>
+                                            <tr>
+                                                <td colspan="2">Consumir antes de: 
+                                                    <span t-esc="posicion['consumir_antes_de']" style="align:center" t-options="{'widget': 'date'}"/>
+                                                    <br/>
+                                                    <span t-esc="posicion['lote']" style="align:center"/>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
                                 </div>
@@ -85,6 +91,63 @@
                         </t>
                     </t>
                 </t>
+        </template>
+
+        <template id="report_lot_label_3x2">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t>
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <div class="row">
+                                <div class="col-8">
+                                    <style>
+                                    .etiqueta3x2 {
+                                        border-collapse: collapse;
+                                        font-size: 4px;
+                                        text-align: center;
+                                        width: 90px;
+                                    }
+                                    table.etiqueta3x2, tr, th, td {
+                                        height: 15px;
+                                    }
+                                    </style>
+                                    <table class="etiqueta3x2">
+                                        <tr>
+                                        <th style="text-align: left;"><br/>
+                                            <span t-field="o.product_id.display_name"/>
+                                        </th>
+                                        </tr>
+                                        <tr name="lot_name">
+                                            <td>
+                                                <span>LN/SN:</span>
+                                                <span t-field="o.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center; vertical-align: middle;" class="col-5">
+                                                <div t-field="o.name" t-options="{'widget': 'barcode', 'width': 550, 'height': 140, 'img_style': 'width:60px;height:20px;'}"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="o.use_expiration_date">
+                                            <td>
+                                                <div t-if="o.use_date">
+                                                    Consumir antes de:
+                                                    <span style="float:right;" t-field="o.use_date" t-options='{"widget": "date"}'/>
+                                                </div>
+                                                <div t-if="o.expiration_date">
+                                                    Vencimiento:
+                                                    <span style="float:right;" t-field="o.expiration_date" t-options='{"widget": "date"}'/>
+                                                </div>
+                                            </td>
+                                        </tr>                                        
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
         </template>
 
         <record id="action_report_sale_ali_nutri_label_01" model="ir.actions.report">
@@ -125,6 +188,18 @@
           <field name="print_report_name">'Products Labels - %s' % (object.name)</field>
           <field name="binding_model_id" eval="False"/>
           <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_report_lot_label_ali_nutri_03" model="ir.actions.report">
+            <field name="name">Lot/Serial Number 3x2 (PDF)</field>
+            <field name="model">stock.production.lot</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">agro.report_lot_label_3x2</field>
+            <field name="report_file">agro.report_lot_label_3x2</field>
+            <field name="paperformat_id" ref="paperformat_label_sale_ali_nutri_3x2"/>
+            <field name="print_report_name">'Lot-Serial - %s' % object.name</field>
+            <field name="binding_model_id" ref="stock.model_stock_production_lot"/>
+            <field name="binding_type">report</field>
         </record>
     </data>
 </odoo>
