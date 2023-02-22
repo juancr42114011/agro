@@ -8,7 +8,7 @@ import logging
 
 class ReporteEtiquetaSinPrecio (models.AbstractModel):
     _name='report.agro.etiqueta_ali_nu_3_x_2_01'
-    _description='Creado para la etiqueta sin precio'
+    _description='Eriquetas 3x2 Alimentos Nutricionales'
 
     def creacion_datos(self, orders):
         dicc_products={}

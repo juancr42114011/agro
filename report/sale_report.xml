@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+    
         <template id="etiqueta_ali_nu_3_x_2_01">
             <t t-call="web.html_container">
                 <t t-if="dicc_products" >
@@ -39,6 +40,52 @@
                 </t>
             </t>
         </template>
+        
+        <template id="etiqueta_ali_nu_3_x_2_02">
+
+                <t t-if="dicc_products_price">
+                    <t t-foreach="dicc_products_price" t-as="llave">
+                        <t t-foreach="llave" t-as="posicion">
+                            <t t-call="web.basic_layout">
+                                <div class="page">
+                                    <style>
+                                    .centered {
+                                        border-collapse: collapse;
+                                    }
+                                    .logo_etiqueta {
+                                        padding: 0px; 
+                                        margin: 0px;
+                                        width:20px;
+                                    }
+                                    .centered td { 
+                                        font-size: 4px;
+                                        height:15px;
+                                        vertical-align: center;
+                                        text-align: center;
+                                    }
+                                    </style>
+                                    <div>
+                                        <table style="margin-top:0.02mm" class="centered">
+                                            <tr><td style="font-weight: bold;" colspan="2"><br/>[<span t-esc="posicion['codigo']"/>] <span t-esc="posicion['descripcion']" style="align:center"/></td></tr>
+                                            <tr>
+                                                <td>
+                                                    <img class="img logo_etiqueta" t-att-src="'/agro/static/src/img/nutrifood.png'"/>
+                                                </td>
+                                                <td><div t-esc="posicion['codigo_barras']" t-options="{'widget': 'barcode','width': 550, 'height': 140, 'img_style': 'width:70px;height:22px;'}"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align: left;">Q. <span t-esc="posicion['precio']" style="align:center"/></td>
+                                                <td style="text-align: right;">Cant. <span t-esc="posicion['cantidad']"/> <span t-esc="posicion['uom']"/></td>
+                                            </tr>
+                                            <tr><td colspan="2">Consumir antes de: <span t-esc="posicion['consumir_antes_de']" style="align:center" t-options="{'widget': 'date'}"/></td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </t>    
+                        </t>
+                    </t>
+                </t>
+        </template>
 
         <record id="action_report_sale_ali_nutri_label_01" model="ir.actions.report">
             <field name="name">3 x 2 Alimentos Nutricionales</field>
@@ -50,6 +97,34 @@
             <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)</field>
             <field name="binding_model_id" ref="model_sale_order"/>
             <field name="binding_type">report</field>
+        </record>
+
+        <record id="paperformat_label_sale_ali_nutri_3x2" model="report.paperformat">
+            <field name="name">Etiqueta 3 x 2 Alimentos Nutricionales</field>
+            <field name="default" eval="True" />
+            <field name="format">custom</field>
+            <field name="page_height">20</field>
+            <field name="page_width">30</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="disable_shrinking" eval="True"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">96</field>
+        </record>
+
+        <record id="action_report_product_ali_nutri_label_01" model="ir.actions.report">
+          <field name="name">3 x 2 Alimentos Nutricionales</field>
+          <field name="model">product.template</field>
+          <field name="report_type">qweb-pdf</field>
+          <field name="report_name">agro.etiqueta_ali_nu_3_x_2_02</field>
+          <field name="report_file">agro.etiqueta_ali_nu_3_x_2_02</field>
+          <field name="paperformat_id" ref="paperformat_label_sale_ali_nutri_3x2"/>
+          <field name="print_report_name">'Products Labels - %s' % (object.name)</field>
+          <field name="binding_model_id" eval="False"/>
+          <field name="binding_type">report</field>
         </record>
     </data>
 </odoo>
