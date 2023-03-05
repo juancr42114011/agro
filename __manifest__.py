@@ -21,13 +21,14 @@
     'version': '0.2',
 
     # any module necessary for this one to work correctly
-    'depends': ['imporgesa',],
+    'depends': ['imporgesa'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/product_template_views.xml',
         'data/account_account_data.xml',
         'data/product_template_data.xml',
         'data/product_pricelist_data.xml',
