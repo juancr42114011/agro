@@ -21,7 +21,7 @@
     'version': '0.2',
 
     # any module necessary for this one to work correctly
-    'depends': ['imporgesa'],
+    'depends': ['imporgesa','stock'],
 
     # always loaded
     'data': [
@@ -39,4 +39,9 @@
     'demo': [
         'demo/demo.xml',
     ],
+    'assets': {
+        'web.report_assets_common': [
+            'agro/static/src/scss/report_product_label.scss',
+        ],
+    },
 }

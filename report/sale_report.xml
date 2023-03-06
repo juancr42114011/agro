@@ -48,22 +48,6 @@
                         <t t-foreach="llave" t-as="posicion">
                             <t t-call="web.basic_layout">
                                 <div class="page">
-                                    <style>
-                                    .centered {
-                                        border-collapse: collapse;
-                                    }
-                                    .logo_etiqueta {
-                                        padding: 0px; 
-                                        margin: 0px;
-                                        width:20px;
-                                    }
-                                    .centered td { 
-                                        font-size: 4px;
-                                        height:15px;
-                                        vertical-align: center;
-                                        text-align: center;
-                                    }
-                                    </style>
                                     <div>
                                         <table style="margin-top:0.02mm" class="centered">
                                             <tr><td style="font-weight: bold;" colspan="2"><br/>[<span t-esc="posicion['codigo']"/>] <span t-esc="posicion['descripcion']" style="align:center"/></td></tr>
@@ -74,14 +58,25 @@
                                                 <td><div t-esc="posicion['codigo_barras']" t-options="{'widget': 'barcode','width': 550, 'height': 140, 'img_style': 'width:70px;height:22px;'}"/></td>
                                             </tr>
                                             <tr>
-                                                <td style="text-align: left;">Q. <span t-esc="posicion['precio']" style="align:center"/></td>
-                                                <td style="text-align: right;">Cant. <span t-esc="posicion['cantidad']"/> <span t-esc="posicion['uom']"/></td>
+                                                <td style="text-align: left;"></td>
+                                                <td style="text-align: right;">
+                                                    <t t-if="posicion['cantidad']">
+                                                        <span t-esc="posicion['cantidad']"/>
+                                                        <span t-esc="posicion['uom']"/>
+                                                    </t>
+                                                </td>
                                             </tr>
                                             <tr>
-                                                <td colspan="2">Consumir antes de: 
-                                                    <span t-esc="posicion['consumir_antes_de']" style="align:center" t-options="{'widget': 'date'}"/>
-                                                    <br/>
-                                                    <span t-esc="posicion['lote']" style="align:center"/>
+                                                <td colspan="2">
+                                                    <t t-if="posicion['consumir_antes_de']">
+                                                        Preferiblemente consumir antes de: <span t-esc="posicion['consumir_antes_de']" style="align:center" t-options="{'widget': 'date'}"/>
+                                                        <br/>
+                                                    </t>
+                                                    <t t-if="posicion['lote']">
+                                                        Lote: <span t-esc="posicion['lote']" style="align:center"/>
+                                                        <br/>
+                                                    </t>
+                                                    Registro Sanitario: <span t-esc="posicion['registro_sanitario']"/>
                                                 </td>
                                             </tr>
                                         </table>
