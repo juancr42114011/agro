@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-<!--
+
         <record id="producto_categoria_1" model="product.category">
             <field name="parent_id" ref="product.product_category_1"/>
             <field name="name">Alimentos Nutricionales</field>
@@ -27,7 +27,7 @@
             <field name="property_account_expense_categ_id" ref="agro.account_110301003"/>
             <field name="property_stock_account_input_categ_id" ref="agro.account_110301003"/>
         </record>        
-
+<!--
         <record id="producto_alimento_nutri_001" model="product.template">
             <field name="name">Arvejas envainadas</field>
             <field name="standard_price">3</field>
