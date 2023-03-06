@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
-
+    <data noupdate="1">
+<!--
         <record id="producto_categoria_1" model="product.category">
             <field name="parent_id" ref="product.product_category_1"/>
             <field name="name">Alimentos Nutricionales</field>
@@ -123,7 +123,7 @@
             <field name="removal_time">3</field>
             <field name="alert_time">1</field>
         </record>
-
+-->
     </data>
 
 </odoo>

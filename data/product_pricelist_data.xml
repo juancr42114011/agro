@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data noupdate="0">
+  <data noupdate="1">
         <record id="precio_lista_01" model="product.pricelist.item">
             <field name="pricelist_id" ref="product.list0"/>
             <field name="compute_price">percentage</field>
