@@ -37,7 +37,7 @@ class ProductLabelLayout(models.TransientModel):
                         'descripcion': linea.product_id.name,
                         'precio':linea.product_id.list_price,
                         'codigo_barras': linea.product_id.barcode,
-                        'cantidad': linea.product_uom_qty,
+                        'cantidad': linea.product_uom_qty + linea.qty_done,
                         'uom': linea.product_uom_id.name,
                         'lote': linea.lot_id.display_name,
                         'consumir_antes_de': linea.lot_id.use_date,
