@@ -10,7 +10,7 @@ class ProductLabelLayout(models.TransientModel):
     description = 'Choose the sheet layout to print the labels'
 
     print_format = fields.Selection(selection_add=[
-    ('label_alnu_3_2', '3 x 2 Alimentos Nutricionales'),
+    ('label_alnu_3_2', '3 x 2 Alimentos Nutricionales 01'),
     ], ondelete={'label_alnu_3_2': 'set default'})
 
     def _prepare_report_data(self):
@@ -37,7 +37,7 @@ class ProductLabelLayout(models.TransientModel):
                         'descripcion': linea.product_id.name,
                         'precio':linea.product_id.list_price,
                         'codigo_barras': linea.product_id.barcode,
-                        'cantidad': linea.qty_done,
+                        'cantidad': linea.product_uom_qty,
                         'uom': linea.product_uom_id.name,
                         'lote': linea.lot_id.display_name,
                         'consumir_antes_de': linea.lot_id.use_date,
