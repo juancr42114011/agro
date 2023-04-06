@@ -48,31 +48,30 @@
                         <t t-foreach="llave" t-as="posicion">
                             <t t-call="web.basic_layout">
                                 <div class="page">
-                                    <div>
-                                        <table style="margin-top:0.02mm" class="centered">
-                                            <tr><td style="font-weight: bold;" colspan="2"><br/>[<span t-esc="posicion['codigo']"/>] <span t-esc="posicion['descripcion']" style="align:center"/></td></tr>
-                                            <tr>
-                                                <td><img class="img logo_etiqueta" t-att-src="'/agro/static/src/img/nutrifood.png'"/></td>
-                                                <td><div t-esc="posicion['codigo_barras']" t-options="{'widget': 'barcode','width': 525, 'height': 120, 'img_style': 'width:70px;height:22px;'}"/></td>
-                                            </tr>
-                                            <tr>
-                                                <td style="text-align: left;"></td>
-                                                <td style="text-align: right;"><t t-if="posicion['cantidad']"><span t-esc="posicion['cantidad']"/><span t-esc="posicion['uom']"/></t></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2"><t t-if="posicion['consumir_antes_de']">Preferiblemente consumir antes de: <span t-esc="posicion['consumir_antes_de']" style="align:center" t-options="{'widget': 'date'}"/></t></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2"><t t-if="posicion['lote']">Lote: <span t-esc="posicion['lote']" style="align:center"/></t></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2"><span t-esc="posicion['registro_sanitario']"/></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2">Después de abierto sellar y refrigerar.</td>
-                                            </tr>
-                                        </table>
-                                    </div>
+                                    <table class="centered">
+                                        <tr><td style="font-weight: bold;" colspan="2"><br/>[<span t-esc="posicion['codigo']"/>] <span t-esc="posicion['descripcion']" style="align:center"/></td></tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <div t-esc="posicion['codigo_barras']" t-options="{'widget': 'barcode','width': 525, 'height': 110, 'img_style': 'width:70px;height:22px;'}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: left;"></td>
+                                            <td style="text-align: right;"><t t-if="posicion['cantidad']"><span t-esc="posicion['cantidad']"/><span t-esc="posicion['uom']"/></t></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><t t-if="posicion['consumir_antes_de']">Consumir antes de: <span t-esc="posicion['consumir_antes_de']" style="align:center" t-options="{'widget': 'date'}"/></t></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><t t-if="posicion['lote']">Lote: <span t-esc="posicion['lote']" style="align:center"/></t></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">R.S. <span t-esc="posicion['registro_sanitario']"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="text-align: center;">Después de abierto <br/>Sellar y Refrigerar.</td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </t>    
                         </t>

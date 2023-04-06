@@ -1,11 +1,12 @@
 .centered {
-    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
     td { 
         font-size: 4px;
         height:2px;
         vertical-align: center;
         text-align: center;    
-        //background-color: green;
+        //background-color: red;
     }
 }
 .logo_etiqueta {
