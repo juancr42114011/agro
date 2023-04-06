@@ -31,7 +31,6 @@
         'views/product_template_views.xml',
         'data/account_account_data.xml',
         'data/product_template_data.xml',
-        'data/product_pricelist_data.xml',
         'data/account_journal_data.xml',
         'report/sale_report.xml',
     ],
