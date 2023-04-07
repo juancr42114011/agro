@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_presupuesto_venta_list" model="ir.actions.act_window">
+        <field name="name">Presupuesto de Venta</field>
+        <field name="res_model">presupuesto.venta</field>
+        <field name="view_mode">tree,kanban,form</field>
+    </record>
+
+    <menuitem id="menu_presupuesto_venta_list"
+        action="action_presupuesto_venta_list"
+        parent="account.menu_finance_entries_management"/>
+</odoo>
