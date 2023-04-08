@@ -11,12 +11,20 @@ class PresupuestoVenta(models.Model):
     _mail_post_access = 'read'
     _check_company_auto = True
     
+    READONLY_STATES = {
+        'purchase': [('readonly', True)],
+        'done': [('readonly', True)],
+        'cancel': [('readonly', True)],
+    }
+    
     name = fields.Char(string='Number', 
                        copy=False, 
                        readonly=True, 
                        store=True, 
                        index=True,
                        )
+    priority = fields.Selection(
+        [('0', 'Normal'), ('1', 'Urgent')], 'Priority', default='0', index=True)
     date = fields.Date(
         string='Date',
         required=True,
@@ -33,9 +41,13 @@ class PresupuestoVenta(models.Model):
             ('cancel', 'Cancelled'),
         ], string='Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
-    company_id = fields.Many2one(comodel_name='res.company', string='Company',
-                                 store=True, readonly=True,
-                                 compute='_compute_company_id')
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, states=READONLY_STATES, default=lambda self: self.env.company.id)
+    currency_id = fields.Many2one('res.currency', 'Currency', required=True, states=READONLY_STATES,
+        default=lambda self: self.env.company.currency_id.id)
+    order_line = fields.One2many('presupuesto.venta.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
+    user_id = fields.Many2one(
+        'res.users', string='Usuario', index=True, tracking=True,
+        default=lambda self: self.env.user, check_company=True)
     
     @api.model
     def create(self, vals):
@@ -50,6 +62,19 @@ class PresupuestoVenta(models.Model):
         res = super(PresupuestoVenta, self_comp).create(vals)
         return res
 
-    def _compute_company_id(self):
-        for move in self:
-            move.company_id = move.journal_id.company_id or move.company_id or self.env.company
+class PresupuestoVentaLine(models.Model):
+    _name = 'presupuesto.venta.line'
+    _description = 'Presupuesto Venta Line'
+    _order = 'order_id, sequence, id'
+
+    name = fields.Text(string='Description', required=True)
+    sequence = fields.Integer(string='Sequence', default=10)
+    product_id = fields.Many2one('product.product', string='Product', domain=[('purchase_ok', '=', True)], change_default=True)
+    
+    order_id = fields.Many2one('presupuesto.venta', string='Order Reference', index=True, required=True, ondelete='cascade')
+    company_id = fields.Many2one('res.company', related='order_id.company_id', string='Company', store=True, readonly=True)
+    state = fields.Selection(related='order_id.state', store=True)
+    
+    display_type = fields.Selection([
+        ('line_section', "Section"),
+        ('line_note', "Note")], default=False, help="Technical field for UX purpose.")

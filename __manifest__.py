@@ -18,14 +18,15 @@
     # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.6',
+    'version': '0.7',
 
     # any module necessary for this one to work correctly
-    'depends': ['imporgesa','stock'],
+    'depends': ['account','imporgesa','stock'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/presupuesto_venta_security.xml',
         'views/views.xml',
         'views/templates.xml',
         'views/product_template_views.xml',

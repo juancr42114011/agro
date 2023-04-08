@@ -1,4 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_presupuesto_venta,access_presupuesto_venta,agro.model_presupuesto_venta,base.group_user,1,0,0,0
+access_presupuesto_venta_line,access_presupuesto_venta_line,agro.model_presupuesto_venta_line,base.group_user,1,0,0,0
 
-manager_presupuesto_venta,manager_presupuesto_venta,agro.model_presupuesto_venta,account.group_account_manager,1,1,1,1 
+manager_presupuesto_venta,manager_presupuesto_venta,agro.model_presupuesto_venta,account.group_account_manager,1,1,1,1
+manager_presupuesto_venta_line,manager_presupuesto_venta_line,agro.model_presupuesto_venta_line,base.group_user,1,1,1,1

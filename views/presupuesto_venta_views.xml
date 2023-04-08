@@ -9,4 +9,87 @@
     <menuitem id="menu_presupuesto_venta_list"
         action="action_presupuesto_venta_list"
         parent="account.menu_finance_entries_management"/>
+
+    <record id="presupuesto_venta_form" model="ir.ui.view">
+        <field name="name">Presupuesto.venta.form</field>
+        <field name="model">presupuesto.venta</field>
+        <field name="arch" type="xml">
+            <form string="Presupuesto de Venta" class="o_purchase_order">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,purchase" readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <span class="o_form_label" attrs="{'invisible': [('state','not in',('draft','sent'))]}">Request for Quotation </span>
+                        <span class="o_form_label" attrs="{'invisible': [('state','in',('draft','sent'))]}">Purchase Order </span>
+                        <h1>
+                            <field name="priority" widget="priority" class="mr-3"/>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date" attrs="{'invisible': [('state','in',('purchase','done'))]}"/>
+                            <field name="id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Products" name="products">
+                            <!-- <field name="tax_country_id" invisible="1"/> -->
+                            <field name="order_line"
+                                widget="section_and_note_one2many"
+                                mode="tree,kanban"
+                                context="{'default_state': 'draft'}"
+                                attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}">
+                                <tree string="Lineas de Presupuesto Venta" editable="bottom">
+                                    <field name="state" invisible="1"/>
+                                    <field name="display_type" invisible="1"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field
+                                        name="product_id"
+                                        attrs="{
+                                            'readonly': [('state', 'in', ('purchase', 'to approve','done', 'cancel'))],
+                                            'required': [('display_type', '=', False)],
+                                        }"
+                                        context="{'company_id': parent.company_id}"
+                                        force_save="1" domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                                    <field name="name" widget="section_and_note_text"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Otra Informacion" name="presupesto_venta_otra_informacion">
+                            <group>
+                                <group name="other_info">
+                                    <field name="user_id" domain="[('share', '=', False)]" widget="many2one_avatar_user"/>
+                                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                                    <field name="currency_id" groups="base.group_multi_currency" force_save="1"/>
+                                </group>
+                            </group>
+                        </page>                            
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="presupuesto_venta_tree" model="ir.ui.view">
+        <field name="name">presupuesto.venta.tree</field>
+        <field name="model">presupuesto.venta</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Presupuesto de Venta" decoration-bf="message_unread==True"
+                    decoration-muted="state=='cancel'" sample="1">
+                <field name="priority" optional="show" widget="priority" nolabel="1"/>
+                <field name="message_unread" invisible="1"/>
+                <field name="name" string="Reference" readonly="1" decoration-info="state in ('draft','sent')"/>
+                <field name="date" invisible="not context.get('quotation_only', False)" optional="show"/>
+                <field name="company_id" readonly="1" options="{'no_create': True}"
+                    groups="base.group_multi_company" optional="show"/>
+                <field name="user_id" optional="show"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" optional="show"/>
+                <field name="activity_exception_decoration" widget="activity_exception"/>
+            </tree>
+        </field>
+    </record>
 </odoo>
