@@ -2,6 +2,32 @@
 
 from odoo import api, fields, models
 
+class AccountMove(models.Model):
+    _inherit = "account.move"
+    
+    def set_diario_metodopago(self):
+        for record in self:
+            if record.company_id.id == 1: #La empresa es Importaciones Generales, S. A.
+                factura_credito = False
+                if record.invoice_payment_term_id.id != self.env.ref('account.account_payment_term_immediate').id:
+                    record.journal_id = 96 #Factura Cambiaria
+                    factura_credito = True
+                else:
+                     record.journal_id = 29 #FFactura Contado Mobiliario y Suministros
+                
+                for line in record.invoice_line_ids:
+                    if line.product_id.categ_id.verificarCategoria('agro.producto_categoria_1'):
+                        if factura_credito:
+                            record.journal_id = self.env.ref('agro.sale_fa_ve_al_nu_ca').id
+                        else:
+                            record.journal_id = self.env.ref('agro.sale_fa_ve_al_nu_co').id
+                        continue
+
+    @api.onchange('invoice_payment_term_id')
+    def _onchange_invoice_payment_term_id(self):
+        print("Hola mundo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        self.set_diario_metodopago()
+
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
@@ -22,3 +48,5 @@ class AccountMoveLine(models.Model):
                     
             if record.product_id:
                 record.analytic_account_id = record.product_id.categ_id.analytic_account_id.id
+    
+

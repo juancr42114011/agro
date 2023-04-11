@@ -24,9 +24,7 @@ class SaleOrder(models.Model):
     
     def _create_invoices(self, grouped=False, final=False, date=None):
         invoice = super(SaleOrder, self)._create_invoices()
-        for line in invoice.invoice_line_ids:
-            if line.product_id.categ_id.verificarCategoria('agro.producto_categoria_1'):
-                invoice.journal_id = self.env.ref('agro.sale_fa_ve_al_nu_co').id
+        invoice.set_diario_metodopago()
         return invoice
 
     def _action_confirm(self):
