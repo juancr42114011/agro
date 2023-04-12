@@ -46,7 +46,7 @@ class AccountMoveLine(models.Model):
                 if rec:
                     record.analytic_tag_ids = rec.analytic_tag_ids
                     
-            if record.product_id:
+            if not record.analytic_account_id and record.product_id:
                 record.analytic_account_id = record.product_id.categ_id.analytic_account_id.id
     
 
