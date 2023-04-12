@@ -9,11 +9,11 @@ class AccountMove(models.Model):
         for record in self:
             if record.company_id.id == 1: #La empresa es Importaciones Generales, S. A.
                 factura_credito = False
-                if record.invoice_payment_term_id.id != self.env.ref('account.account_payment_term_immediate').id:
+                if not record.invoice_payment_term_id or record.invoice_payment_term_id.id == self.env.ref('account.account_payment_term_immediate').id:
+                    record.journal_id = 29  #Factura Contado Mobiliario y Suministros
+                else:
                     record.journal_id = 96 #Factura Cambiaria
                     factura_credito = True
-                else:
-                     record.journal_id = 29 #FFactura Contado Mobiliario y Suministros
                 
                 for line in record.invoice_line_ids:
                     if line.product_id.categ_id.verificarCategoria('agro.producto_categoria_1'):
@@ -25,7 +25,6 @@ class AccountMove(models.Model):
 
     @api.onchange('invoice_payment_term_id')
     def _onchange_invoice_payment_term_id(self):
-        print("Hola mundo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         self.set_diario_metodopago()
 
 class AccountMoveLine(models.Model):
