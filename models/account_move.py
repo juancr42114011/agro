@@ -49,4 +49,13 @@ class AccountMoveLine(models.Model):
             if not record.analytic_account_id and record.product_id:
                 record.analytic_account_id = record.product_id.categ_id.analytic_account_id.id
     
+class ResPartner(models.Model):
+    _inherit = "res.partner"
+
+    @api.model
+    def _get_default_companyasdf(self):
+        print("Hola mundo")    
+    
+    company_id = fields.Many2one(default=_get_default_companyasdf)
+
 
