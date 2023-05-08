@@ -36,6 +36,7 @@
         'data/ir_sequence_data.xml',
         'views/presupuesto_venta_views.xml',
         'report/sale_report.xml',
+        'wizard/purchase_order_views_wizard.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

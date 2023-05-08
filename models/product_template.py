@@ -6,6 +6,13 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
     
     registro_sanitario = fields.Char(string="Registro Sanitario")
+    cantidad_min_inventario = fields.Float(
+        'Cantidades Minima en Inventario', default=0,
+        help="Cantidades Minima en Inventario")
+    cantidad_min_compra = fields.Float(
+        'Cantidad de Compra Minima', default=0,
+        help="Cantidad de Compra Minima")
+    
 
 class ProductCategory(models.Model):
     _inherit = "product.category"

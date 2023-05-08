@@ -91,7 +91,7 @@ class PresupuestoVenta(models.Model):
     def calcular(self):
         self.order_line.unlink()
         dominio = []
-        dominio = [('id','in',(404,437))]
+        dominio = [('id','in',(4,585,406,404,437))]
         productos = self.env['product.product'].search(dominio)
         for producto in productos:
             

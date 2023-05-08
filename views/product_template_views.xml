@@ -11,6 +11,16 @@
                 <group name="traceability" position="inside">
                     <field name="registro_sanitario" attrs="{'invisible': [('tracking', '=','none')]}"/>
                 </group>    
+                <xpath expr="//group[@name='group_lots_and_weight']" position="inside">
+                    <label for="cantidad_min_inventario"/>
+                    <div>
+                        <field name="cantidad_min_inventario" class="oe_inline" style="vertical-align:baseline"/>
+                    </div>
+                    <label for="cantidad_min_compra"/>
+                    <div>
+                        <field name="cantidad_min_compra" class="oe_inline" style="vertical-align:baseline"/>
+                    </div>
+                </xpath>
             </field>
         </record>
 
