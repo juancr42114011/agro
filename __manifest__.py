@@ -25,18 +25,18 @@
 
     # always loaded
     'data': [
-        'security/ir.model.access.csv',
-        'security/presupuesto_venta_security.xml',
+        #'security/ir.model.access.csv',
+        #'security/presupuesto_venta_security.xml',
         'views/views.xml',
         'views/templates.xml',
         'views/product_template_views.xml',
         'data/account_account_data.xml',
         'data/product_template_data.xml',
         'data/account_journal_data.xml',
-        'data/ir_sequence_data.xml',
-        'views/presupuesto_venta_views.xml',
+        #'data/ir_sequence_data.xml',
+        #'views/presupuesto_venta_views.xml',
         'report/sale_report.xml',
-        'wizard/purchase_order_views_wizard.xml',
+        #'wizard/purchase_order_views_wizard.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
