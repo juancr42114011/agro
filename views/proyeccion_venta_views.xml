@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="action_presupuesto_venta_list" model="ir.actions.act_window">
-        <field name="name">Presupuesto de Venta</field>
-        <field name="res_model">presupuesto.venta</field>
+    <record id="action_proyeccion_venta_list" model="ir.actions.act_window">
+        <field name="name">Proyeccion de Venta</field>
+        <field name="res_model">proyeccion.venta</field>
         <field name="view_mode">tree,kanban,form</field>
     </record>
 
-    <menuitem id="menu_presupuesto_venta_list"
-        action="action_presupuesto_venta_list"
+    <menuitem id="menu_proyeccion_venta_list"
+        action="action_proyeccion_venta_list"
         parent="account.menu_finance_entries_management"/>
 
-    <record id="presupuesto_venta_form" model="ir.ui.view">
-        <field name="name">Presupuesto.venta.form</field>
-        <field name="model">presupuesto.venta</field>
+    <record id="proyeccion_venta_form" model="ir.ui.view">
+        <field name="name">proyeccion.venta.form</field>
+        <field name="model">proyeccion.venta</field>
         <field name="arch" type="xml">
-            <form string="Presupuesto de Venta" class="o_purchase_order">
+            <form string="Proyeccion de Venta" class="o_purchase_order">
                 <header>
                     <button name="calcular" type="object" string="Calcular" states="draft"/>
                     <button name="excel" type="object" string="Excel" states="draft"/>
@@ -23,7 +23,7 @@
                 <sheet>
                     <div class="oe_title">
                         <span class="o_form_label" attrs="{'invisible': [('state','not in',('draft','sent'))]}">Borrador </span>
-                        <span class="o_form_label" attrs="{'invisible': [('state','in',('draft','sent'))]}">Presupuesto de Venta</span>
+                        <span class="o_form_label" attrs="{'invisible': [('state','in',('draft','sent'))]}">proyeccion de Venta</span>
                         <h1>
                             <field name="priority" widget="priority" class="mr-3"/>
                             <field name="name" readonly="1"/>
@@ -47,7 +47,7 @@
                                 mode="tree,kanban"
                                 context="{'default_state': 'draft'}"
                                 attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}">
-                                <tree string="Lineas de Presupuesto Venta" editable="bottom">
+                                <tree string="Lineas de proyeccion Venta" editable="bottom">
                                     <field name="state" invisible="1"/>
                                     <field name="display_type" invisible="1"/>
                                     <field name="sequence" widget="handle"/>
@@ -83,12 +83,12 @@
         </field>
     </record>
 
-    <record id="presupuesto_venta_tree" model="ir.ui.view">
-        <field name="name">presupuesto.venta.tree</field>
-        <field name="model">presupuesto.venta</field>
+    <record id="proyeccion_venta_tree" model="ir.ui.view">
+        <field name="name">proyeccion.venta.tree</field>
+        <field name="model">proyeccion.venta</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Presupuesto de Venta" decoration-bf="message_unread==True"
+            <tree string="proyeccion de Venta" decoration-bf="message_unread==True"
                     decoration-muted="state=='cancel'" sample="1">
                 <field name="priority" optional="show" widget="priority" nolabel="1"/>
                 <field name="message_unread" invisible="1"/>

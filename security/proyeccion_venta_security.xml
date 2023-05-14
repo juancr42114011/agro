@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <record model="ir.rule" id="proyeccion_venta_comp_rule">
+        <field name="name">Proyeccion de Venta multi-company</field>
+        <field name="model_id" ref="model_proyeccion_venta"/>
+        <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="proyeccion_venta_line_comp_rule">
+        <field name="name">Proyeccion de Venta Line multi-company</field>
+        <field name="model_id" ref="model_proyeccion_venta_line"/>
+        <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+    </record>
+</data>
+</odoo>

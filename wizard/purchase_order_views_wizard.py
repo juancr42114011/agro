@@ -17,9 +17,9 @@ import base64
 import io
 import logging
 
-class PurchaseOrderPresupuestoWizard(models.TransientModel):
-    _name = 'purchase.order.presupuesto.wizard'
-    _description = 'Orden de Compra Presupuesto Wizard'
+class PurchaseOrderProyeccionWizard(models.TransientModel):
+    _name = 'purchase.order.proyeccion.wizard'
+    _description = 'Orden de Compra proyeccion Wizard'
     
     def _get_default_company(self):
         if not self._context.get('active_model'):
@@ -30,7 +30,7 @@ class PurchaseOrderPresupuestoWizard(models.TransientModel):
     company_id = fields.Many2one('res.company', default=_get_default_company)
     date_start = fields.Date(required=True, default=lambda self: (fields.Date.context_today(self) - datetime.timedelta(days=365)).replace(day=1))
     date_end = fields.Date(required=True, default=lambda self: fields.Date.context_today(self))
-    presupuesto_venta_id = fields.Many2one('presupuesto.venta')
+    proyeccion_venta_id = fields.Many2one('proyeccion.venta')
     
     archivo = fields.Binary('Archivo', filters='.xls')
 
@@ -99,7 +99,7 @@ class PurchaseOrderPresupuestoWizard(models.TransientModel):
             sheet_libro.write(i,1, inventario_actual)
             
             i += 3
-            sheet_libro.write(i,0,"Presupuesto")
+            sheet_libro.write(i,0,"proyeccion")
             
             i += 1
             sheet_libro.write(i,0,"Fecha")
@@ -108,15 +108,15 @@ class PurchaseOrderPresupuestoWizard(models.TransientModel):
             sheet_libro.write(i,3,"Saldo")
             sheet_libro.write(i,4,"Observaciones")
             
-            for presupuesto in self.presupuesto_venta_id.order_line.filtered(lambda r: r.product_id.id == order.product_id.id):
+            for proyeccion in self.proyeccion_venta_id.order_line.filtered(lambda r: r.product_id.id == order.product_id.id):
                 i += 1
                 columna_saldo = 0
-                sheet_libro.write(i,0,presupuesto.date_start,formato_fecha)
-                sheet_libro.write(i,1,presupuesto.product_qty,formato_miles)
+                sheet_libro.write(i,0,proyeccion.date_start,formato_fecha)
+                sheet_libro.write(i,1,proyeccion.product_qty,formato_miles)
                 
                 #Voy a buscar la cantidad que se va a comprar por compra de la columna Entradas
                 orden_compra_linea = self.env['purchase.order.line'].read_group(
-                domain=[('product_id','=',order.product_id.id),('order_id.date_order','>=',presupuesto.date_start),('order_id.date_order','<=',presupuesto.date_end)],
+                domain=[('product_id','=',order.product_id.id),('order_id.date_order','>=',proyeccion.date_start),('order_id.date_order','<=',proyeccion.date_end)],
                 fields=['product_id', 'order_id.date_order:month', 'product_qty:sum'],
                 groupby=['product_id',],
                 )
@@ -127,7 +127,7 @@ class PurchaseOrderPresupuestoWizard(models.TransientModel):
                 sheet_libro.write(i,2,entrada,formato_miles)
                 
                 #Calculo de la columna Saldo
-                columna_saldo = inventario_actual - presupuesto.product_qty + entrada
+                columna_saldo = inventario_actual - proyeccion.product_qty + entrada
                 sheet_libro.write(i,3,columna_saldo,formato_miles)
                 inventario_actual = columna_saldo
             
@@ -166,6 +166,6 @@ class PurchaseOrderPresupuestoWizard(models.TransientModel):
         return {
             'name': 'FEC',
             'type': 'ir.actions.act_url',
-            'url': "web/content/?model=purchase.order.presupuesto.wizard&id=" + str(self.id) + "&filename_field=filename&field=archivo&download=true&filename=" + 'AnalisisCompra',
+            'url': "web/content/?model=purchase.order.proyeccion.wizard&id=" + str(self.id) + "&filename_field=filename&field=archivo&download=true&filename=" + 'AnalisisCompra',
             'target': 'self',
         }
