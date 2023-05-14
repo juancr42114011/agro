@@ -3,7 +3,7 @@
 from odoo import api, fields, models, Command, _
 from odoo.exceptions import RedirectWarning, UserError, ValidationError, AccessError
 
-import datetime
+from datetime import timedelta, datetime, date
 from dateutil.relativedelta import relativedelta
 
 from odoo.tools.misc import xlsxwriter
@@ -46,9 +46,14 @@ class ProyeccionVenta(models.Model):
     )
     date_start = fields.Date(string='Fecha Inicio',)
     date_end = fields.Date(string='Fecha Fin',)
+    year = fields.Selection(
+        [(str(x), str(x)) for x in range(2020, date.today().year + 3)],
+        string='Año',
+        default=str(date.today().year),
+    )
     state = fields.Selection(selection=[
             ('draft', 'Draft'),
-            ('posted', 'Posted'),
+            ('done', 'Confirmado'),
             ('cancel', 'Cancelled'),
         ], string='Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
@@ -93,6 +98,8 @@ class ProyeccionVenta(models.Model):
         dominio = []
         dominio = [('id','in',(4,585,406,404,437))]
         productos = self.env['product.product'].search(dominio)
+        self.date_start = datetime(year=int(self.year), month=1, day=1).date()
+        self.date_end = datetime(year=int(self.year), month=12, day=31).date()
         for producto in productos:
             
             fecha_actual = self.date_start
@@ -113,7 +120,7 @@ class ProyeccionVenta(models.Model):
                 }
                 self.env['proyeccion.venta.line'].create(detalle)
 
-                fecha_actual += datetime.timedelta(days=32)
+                fecha_actual += timedelta(days=32)
                 fecha_actual = fecha_actual.replace(day=1)
     
     def excel(self):
@@ -201,6 +208,15 @@ class ProyeccionVenta(models.Model):
             'url': "web/content/?model=proyeccion.venta&id=" + str(self.id) + "&filename_field=filename&field=archivo&download=true&filename=" + 'proyeccion_venta',
             'target': 'self',
         }
+        
+    def action_done(self):
+        return self.write({'state': 'done'})
+    
+    def action_cancel(self):
+        return self.write({'state': 'cancel'})
+    
+    def action_draft(self):
+        return self.write({'state': 'draft'})
 
 
 class ProyeccionVentaLine(models.Model):

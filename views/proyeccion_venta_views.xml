@@ -16,9 +16,12 @@
         <field name="arch" type="xml">
             <form string="Proyeccion de Venta" class="o_purchase_order">
                 <header>
+                    <button name="action_done" class="btn-primary" type="object" string="Confirmar" states="draft"/>
                     <button name="calcular" type="object" string="Calcular" states="draft"/>
                     <button name="excel" type="object" string="Excel" states="draft"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,purchase" readonly="1"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel" readonly="1"/>
+                    <button name="action_cancel" type="object" string="Cancelar" states="done"/>
+                    <button name="action_draft" type="object" string="Establecer a Borrador" states="cancel"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -32,8 +35,10 @@
                     <group>
                         <group>
                             <field name="id" invisible="1"/>
-                            <field name="date_start" attrs="{'invisible': [('state','in',('purchase','done'))]}"/>
-                            <field name="date_end" attrs="{'invisible': [('state','in',('purchase','done'))]}"/>
+                            <field name="year" attrs="{'invisible': [('state','in',('purchase','done'))]}"/>
+                            <field name="date_start" invisible="1"/>
+                            <field name="date_end" invisible="1"/>
+                            
                         </group>
                         <group>
                             <field name="archivo" readonly="1" filename="name"/>
@@ -41,12 +46,15 @@
                     </group>
                     <notebook>
                         <page string="Products" name="products">
-                            <!-- <field name="tax_country_id" invisible="1"/> -->
+                            <!-- <field name="tax_country_id" invisible="1"/> 
+                            attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"
+                            -->
                             <field name="order_line"
                                 widget="section_and_note_one2many"
                                 mode="tree,kanban"
                                 context="{'default_state': 'draft'}"
-                                attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}">
+                                
+                                readonly="1">
                                 <tree string="Lineas de proyeccion Venta" editable="bottom">
                                     <field name="state" invisible="1"/>
                                     <field name="display_type" invisible="1"/>
