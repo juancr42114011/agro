@@ -64,7 +64,7 @@ class ProyeccionVenta(models.Model):
     user_id = fields.Many2one(
         'res.users', string='Usuario', index=True, tracking=True,
         default=lambda self: self.env.user, check_company=True)
-    
+    a_presupuestar = fields.Boolean(string="A Prespuestar", help="A presupuetar.", widget="toggle")
     archivo = fields.Binary('Archivo', filters='.xls')
     
     @api.model
@@ -79,24 +79,52 @@ class ProyeccionVenta(models.Model):
         
         res = super(ProyeccionVenta, self_comp).create(vals)
         return res
+    
+    def buscar_ventas_product(self, product_id, date_start, date_end):
+        dominio = [
+            ('product_id', '=', product_id),
+            ('move_id.invoice_date','>=',date_start),
+            ('move_id.invoice_date','<=',date_end),
+            ('move_id.journal_id.type','=','sale'),
+            ('move_id.state','=','posted'),
+        ]
+        venta_producto = self.env['account.move.line'].search(dominio)
+        return venta_producto
 
     def ventas_product(self, product_id, date_start, date_end):
         venta = {}
-        venta_producto = self.env['account.move.line'].read_group(
-                domain=[('product_id', '=', product_id),('move_id.invoice_date','>=',date_start),('move_id.invoice_date','<=',date_end),
-                        ('move_id.journal_id.type','=','sale')],
-                fields=['product_id', 'move_id.invoice_date:month', 'quantity:sum', 'price_subtotal:sum'],
-                groupby=['product_id',],
-            )
-        #venta_producto_mapping = {move['product_id'][0]: move['quantity'] for move in venta_producto}
-        venta['quantity'] = venta_producto[0]['quantity'] if len(venta_producto)>0 and 'quantity'in venta_producto[0] else 0
-        venta['price'] = venta_producto[0]['price_subtotal'] if len(venta_producto)>0 and 'price_subtotal'in venta_producto[0] else 0
+        venta_producto = self.buscar_ventas_product(product_id, date_start, date_end)
+        venta['quantity'] = 0
+        venta['price'] = 0
+        venta['tipo'] = None
+        for linea in venta_producto:
+            #Si es una nota de credito se multiplica -1 en cantidad y precio.
+            venta['quantity'] += linea.quantity * (-1 if linea.move_id.move_type == 'out_refund' else 1)
+            venta['price'] += linea.price_subtotal * (-1 if linea.move_id.move_type == 'out_refund' else 1) 
+            #Variable tipo me ayuda a identificar si el datos es el año en curso o del año pasado, Actual año en curso
+            venta['tipo'] = 'Actual'
+        
+        if not venta_producto and self.a_presupuestar:
+            date_start_r = date_start.replace(year=date_start.year-1)
+            date_end_r = date_end.replace(year=date_end.year-1)
+            venta_producto = self.buscar_ventas_product(product_id, date_start_r, date_end_r)
+            for linea in venta_producto:
+                #Si es una nota de credito se multiplica -1 en cantidad y precio.
+                venta['quantity'] += linea.quantity * (-1 if linea.move_id.move_type == 'out_refund' else 1)
+                venta['price'] += linea.price_subtotal * (-1 if linea.move_id.move_type == 'out_refund' else 1)            
+            
+            
+            
+            venta['tipo'] = 'Pasado'
         return venta
 
     def calcular(self):
         self.order_line.unlink()
         dominio = []
-        dominio = [('id','in',(4,585,406,404,437))]
+        #dominio = [('id','in',(4,585,406,404,437))]
+        #dominio = [('id','in',(469,))]
+        dominio = [('detailed_type','in',('product',))]
+        dominio += [('id','in',(469,))]
         productos = self.env['product.product'].search(dominio)
         self.date_start = datetime(year=int(self.year), month=1, day=1).date()
         self.date_end = datetime(year=int(self.year), month=12, day=31).date()
@@ -117,6 +145,7 @@ class ProyeccionVenta(models.Model):
                     'date_end': ultimo_dia_mes,
                     'product_qty': venta['quantity'],
                     'price_unit': venta['price'],
+                    'tipo': venta['tipo'],
                 }
                 self.env['proyeccion.venta.line'].create(detalle)
 
@@ -127,10 +156,17 @@ class ProyeccionVenta(models.Model):
         f = io.BytesIO()
         workbook = xlsxwriter.Workbook(f)
         formato_fecha = workbook.add_format({'num_format': 'dd/mm/yyyy'})
+        formato_miles_decimal = workbook.add_format({'num_format': '#,##0.00'})
         sheet_libro = workbook.add_worksheet('Detalle')
 
-        i = 0;
-        sheet_libro.set_column(0,30,12)
+        i = 0
+        sheet_libro.set_column(0,0,10)
+        sheet_libro.set_column(1,1,10)
+        sheet_libro.set_column(2,2,30)
+        sheet_libro.set_column(28,28,20)
+        sheet_libro.set_column(29,29,20)
+        sheet_libro.write(i,0,self.year)
+        i += 1
         sheet_libro.write(i,0,"Marca")
         sheet_libro.write(i,1,"Categoria")
         sheet_libro.write(i,2,"Producto")
@@ -152,7 +188,7 @@ class ProyeccionVenta(models.Model):
             venta_producto_mes = self.env['proyeccion.venta.line'].read_group(
                 domain=[('order_id', '=', self.id),('product_id','=',linea_producto)],
                 fields=['date_start', 'product_qty:sum', 'price_unit:sum'],
-                groupby=['date_start:month'],
+                groupby=['date_start'],
             )
             j=2
             inicio_colunas = False
@@ -160,14 +196,22 @@ class ProyeccionVenta(models.Model):
             cantidad_suma_columna = []
             for dato in venta_producto_mes:
                 j += 1
-                sheet_libro.write(0,j, dato['date_start:month'])
+                titulo_mes = dato['date_start'][0:len(dato['date_start'])-5].capitalize()
+                sheet_libro.write(0,j, titulo_mes)
+                sheet_libro.write(1,j, 'Cant.')
                 sheet_libro.write(i,j, dato['product_qty'])
                 cantidad_suma_columna.append(j)
                 j += 1
-                sheet_libro.write(0,j, 'Precio ' + dato['date_start:month'])
+                sheet_libro.write(1,j, 'Precio')
                 precio_unitario =  dato['price_unit'] / dato['product_qty'] if dato['product_qty'] != 0 else 0
-                sheet_libro.write(i,j, precio_unitario)
+                
+                #sheet_libro.write(i,j, precio_unitario)
+                
                 precio_total_venta += dato['price_unit']
+                
+                formula = '={0}{1}*{2}{3}'.format(xl_col_to_name(j-1), i+1, 'AD', i+1)
+                sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
+                
                 if not inicio_colunas:
                     inicio_colunas = j
             
@@ -181,16 +225,16 @@ class ProyeccionVenta(models.Model):
   
             j += 1
             formula = '=' + formula_suma_columna[0:len(formula_suma_columna)-1]
-            print(formula)
-            sheet_libro.write(0,j,'Sub-Total')
+
+            sheet_libro.write(1,j,'Sub-Total')
             sheet_libro.write_formula(i,j,formula)
             j += 1
-            sheet_libro.write(0,j, 'Venta Total Sin IVA')
-            sheet_libro.write(i,j, precio_total_venta)
+            sheet_libro.write(1,j, 'Venta Total Sin IVA')
+            sheet_libro.write(i,j, precio_total_venta, formato_miles_decimal)
             j += 1
-            sheet_libro.write(0,j, 'Precio Promedio Sin IVA')
-            formula = '={0}{1}/{2}{3}'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-2), i+1)
-            sheet_libro.write_formula(i,j, formula)
+            sheet_libro.write(1,j, 'Precio Promedio Sin IVA')
+            formula = '=IFERROR({0}{1}/{2}{3},0)'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-2), i+1)
+            sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
 
             
             
@@ -229,6 +273,7 @@ class ProyeccionVentaLine(models.Model):
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)], change_default=True)
     product_qty = fields.Float(string='Cantidad', digits='Product Unit of Measure', required=True)
     price_unit = fields.Float(string='Precio Unid.', required=True, digits='Product Price')
+    tipo = fields.Char(string='Tipo', readonly=True)
     
     order_id = fields.Many2one('proyeccion.venta', string='Order Reference', index=True, required=True, ondelete='cascade')
     company_id = fields.Many2one('res.company', related='order_id.company_id', string='Company', store=True, readonly=True)
