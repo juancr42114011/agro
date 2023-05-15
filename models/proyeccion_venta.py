@@ -104,7 +104,7 @@ class ProyeccionVenta(models.Model):
             #Variable tipo me ayuda a identificar si el datos es el año en curso o del año pasado, Actual año en curso
             venta['tipo'] = 'Actual'
         
-        if not venta_producto and self.a_presupuestar:
+        if not venta_producto and self.a_presupuestar and (date_start.month >= date.today().month):
             date_start_r = date_start.replace(year=date_start.year-1)
             date_end_r = date_end.replace(year=date_end.year-1)
             venta_producto = self.buscar_ventas_product(product_id, date_start_r, date_end_r)
@@ -124,7 +124,7 @@ class ProyeccionVenta(models.Model):
         #dominio = [('id','in',(4,585,406,404,437))]
         #dominio = [('id','in',(469,))]
         dominio = [('detailed_type','in',('product',))]
-        dominio += [('id','in',(469,))]
+        #dominio += [('id','in',(469,))]
         productos = self.env['product.product'].search(dominio)
         self.date_start = datetime(year=int(self.year), month=1, day=1).date()
         self.date_end = datetime(year=int(self.year), month=12, day=31).date()

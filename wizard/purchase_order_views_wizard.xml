@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_purchase_order_presupuesto_wizard" model="ir.ui.view">
-        <field name="name">purchase.order.presupuesto.wizard.view</field>
-        <field name="model">purchase.order.presupuesto.wizard</field>
+    <record id="view_purchase_order_proyeccion_wizard" model="ir.ui.view">
+        <field name="name">purchase.order.proyeccion.wizard.view</field>
+        <field name="model">purchase.order.proyeccion.wizard</field>
         <field name="arch" type="xml">
             <form string="Analisis de Compra">
                 <field name="company_id" invisible="1"/>
@@ -12,7 +12,7 @@
                     </div>
                   <group>
                     <field name="date_start"/>
-                    <field name="presupuesto_venta_id"/>
+                    <field name="proyeccion_venta_id"/>
                   </group>
                   <group>
                     <field name="date_end"/>
@@ -26,10 +26,10 @@
         </field>
     </record>
 
-    <record id="view_purchase_order_presupuesto_action" model="ir.actions.act_window">
+    <record id="view_purchase_order_proyeccion_action" model="ir.actions.act_window">
         <field name="name">Analisis de Compra</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">purchase.order.presupuesto.wizard</field>
+        <field name="res_model">purchase.order.proyeccion.wizard</field>
         <field name="view_mode">form</field>
         <field name="binding_model_id" ref="purchase.model_purchase_order"/>
         <field name="groups_id" eval="[(4, ref('account.group_account_user'))]"/>
