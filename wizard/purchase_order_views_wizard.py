@@ -34,17 +34,29 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
     
     archivo = fields.Binary('Archivo', filters='.xls')
 
+    def buscar_ventas_product(self, product_id, date_start, date_end):
+        dominio = [
+            ('product_id', '=', product_id),
+            ('move_id.invoice_date','>=',date_start),
+            ('move_id.invoice_date','<=',date_end),
+            ('move_id.journal_id.type','=','sale'),
+            ('move_id.state','=','posted'),
+        ]
+        venta_producto = self.env['account.move.line'].search(dominio)
+        return venta_producto
+
     def ventas_product(self, product_id, date_start, date_end):
         venta = {}
-        venta_producto = self.env['account.move.line'].read_group(
-                domain=[('product_id', '=', product_id),('move_id.invoice_date','>=',date_start),('move_id.invoice_date','<=',date_end),
-                        ('move_id.journal_id.type','=','sale')],
-                fields=['product_id', 'move_id.invoice_date:month', 'quantity:sum', 'price_subtotal:sum'],
-                groupby=['product_id',],
-            )
-        #venta_producto_mapping = {move['product_id'][0]: move['quantity'] for move in venta_producto}
-        venta['quantity'] = venta_producto[0]['quantity'] if len(venta_producto)>0 and 'quantity'in venta_producto[0] else 0
-        venta['price'] = venta_producto[0]['price_subtotal'] if len(venta_producto)>0 and 'price_subtotal'in venta_producto[0] else 0
+        venta_producto = self.buscar_ventas_product(product_id, date_start, date_end)
+        venta['quantity'] = 0
+        venta['price'] = 0
+        venta['tipo'] = None
+        for linea in venta_producto:
+            #Si es una nota de credito se multiplica -1 en cantidad y precio.
+            venta['quantity'] += linea.quantity * (-1 if linea.move_id.move_type == 'out_refund' else 1)
+            venta['price'] += linea.price_subtotal * (-1 if linea.move_id.move_type == 'out_refund' else 1) 
+            #Variable tipo me ayuda a identificar si el datos es el año en curso o del año pasado, Actual año en curso
+            venta['tipo'] = 'Actual'
         return venta
     
     def generar_excel(self):
@@ -76,10 +88,17 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
                 ultimo_dia_mes = fecha_actual + relativedelta(day=1, months=+1, days=-1)
                 primer_dia_mes = fecha_actual
                 venta = self.ventas_product(order.product_id.id, primer_dia_mes, ultimo_dia_mes)
+                
+             
+                
+                mes = primer_dia_mes.strftime('%B')
+                anio = primer_dia_mes.strftime('%Y')
+                
 
-                sheet_libro.write(i,0,primer_dia_mes,formato_fecha)
-                sheet_libro.write(i,1,venta['quantity'],formato_miles)
-                sheet_libro.write(i,2,venta['price'],formato_miles_decimal)
+                sheet_libro.write(i,0,anio)
+                sheet_libro.write(i,1,mes)
+                sheet_libro.write(i,2,venta['quantity'],formato_miles)
+                sheet_libro.write(i,3,venta['price'],formato_miles_decimal)
                 
                 fecha_actual += datetime.timedelta(days=32)
                 fecha_actual = fecha_actual.replace(day=1)
