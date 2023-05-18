@@ -28,8 +28,8 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
         return orders and orders[0].company_id.id
     
     company_id = fields.Many2one('res.company', default=_get_default_company)
-    date_start = fields.Date(required=True, default=lambda self: (fields.Date.context_today(self) - datetime.timedelta(days=365)).replace(day=1))
-    date_end = fields.Date(required=True, default=lambda self: fields.Date.context_today(self))
+    date_start = fields.Date(string='Inicio', required=True, default=lambda self: (fields.Date.context_today(self) - datetime.timedelta(days=365)).replace(day=1))
+    date_end = fields.Date(string='Fin', required=True, default=lambda self: fields.Date.context_today(self))
     proyeccion_venta_id = fields.Many2one('proyeccion.venta')
     
     archivo = fields.Binary('Archivo', filters='.xls')

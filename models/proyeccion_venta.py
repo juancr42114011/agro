@@ -50,6 +50,7 @@ class ProyeccionVenta(models.Model):
         [(str(x), str(x)) for x in range(2020, date.today().year + 3)],
         string='Año',
         default=str(date.today().year),
+        states={'draft': [('readonly', False)]},
     )
     state = fields.Selection(selection=[
             ('draft', 'Draft'),
