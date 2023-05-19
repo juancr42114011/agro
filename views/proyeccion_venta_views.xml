@@ -35,7 +35,7 @@
                     <group>
                         <group>
                             <field name="id" invisible="1"/>
-                            <field name="year" attrs="{'invisible': [('state','in',('purchase','done'))]}"/>
+                            <field name="year"/>
                             <field name="date_start" invisible="1"/>
                             <field name="date_end" invisible="1"/>
                             

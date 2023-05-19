@@ -17,6 +17,21 @@ import base64
 import io
 import logging
 
+MESES = {
+            1:'Enero',
+            2:'Febrero',
+            3:'Marzo',
+            4:'Abril',
+            5:'Mayo',
+            6:'Junio',
+            7:'Julio',
+            8:'Agosto',
+            9:'Septiembre',
+            10:'Octubre',
+            11:'Noviembre',
+            12:'Diciembre',
+        }
+
 class PurchaseOrderProyeccionWizard(models.TransientModel):
     _name = 'purchase.order.proyeccion.wizard'
     _description = 'Orden de Compra proyeccion Wizard'
@@ -30,7 +45,7 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
     company_id = fields.Many2one('res.company', default=_get_default_company)
     date_start = fields.Date(string='Inicio', required=True, default=lambda self: (fields.Date.context_today(self) - datetime.timedelta(days=365)).replace(day=1))
     date_end = fields.Date(string='Fin', required=True, default=lambda self: fields.Date.context_today(self))
-    proyeccion_venta_id = fields.Many2one('proyeccion.venta')
+    #proyeccion_venta_id = fields.Many2one('proyeccion.venta')
     
     archivo = fields.Binary('Archivo', filters='.xls')
 
@@ -82,6 +97,14 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
             sheet_libro.write(i,0,"Ventas del Producto")
             
             fecha_actual = self.date_start
+            
+            trimestres = {
+                1: [],
+                2: [],
+                3: [],
+                4: [],
+            }
+        
             while fecha_actual <= self.date_end:
                 
                 i += 1
@@ -89,19 +112,23 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
                 primer_dia_mes = fecha_actual
                 venta = self.ventas_product(order.product_id.id, primer_dia_mes, ultimo_dia_mes)
                 
-             
+                trimestre = (fecha_actual.month - 1) // 3 + 1
+                venta['anio'] = primer_dia_mes.year
+                venta['mes'] = MESES[primer_dia_mes.month]
+                trimestres[trimestre].append(venta)                
                 
-                mes = primer_dia_mes.strftime('%B')
-                anio = primer_dia_mes.strftime('%Y')
-                
-
-                sheet_libro.write(i,0,anio)
-                sheet_libro.write(i,1,mes)
+                sheet_libro.write(i,0,primer_dia_mes.year,formato_miles)
+                sheet_libro.write(i,1,MESES[primer_dia_mes.month])
                 sheet_libro.write(i,2,venta['quantity'],formato_miles)
                 sheet_libro.write(i,3,venta['price'],formato_miles_decimal)
                 
                 fecha_actual += datetime.timedelta(days=32)
                 fecha_actual = fecha_actual.replace(day=1)
+            
+            #for trim in trimestres:
+            #    print(trimestres[trim])
+            #    print("--------------------------------")
+            
             
             i += 3
             sheet_libro.write(i,0,"Unidades Minimas en Inventario")
@@ -121,17 +148,21 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
             sheet_libro.write(i,0,"proyeccion")
             
             i += 1
-            sheet_libro.write(i,0,"Fecha")
-            sheet_libro.write(i,1,"Unidades de Venta Proyectadas")
-            sheet_libro.write(i,2,"Entradas")
-            sheet_libro.write(i,3,"Saldo")
-            sheet_libro.write(i,4,"Observaciones")
+            sheet_libro.write(i,0,"Año")
+            sheet_libro.write(i,1,"Mes")
+            sheet_libro.write(i,2,"Unidades de Venta Proyectadas")
+            sheet_libro.write(i,3,"Entradas")
+            sheet_libro.write(i,4,"Saldo")
+            sheet_libro.write(i,5,"Observaciones")
             
-            for proyeccion in self.proyeccion_venta_id.order_line.filtered(lambda r: r.product_id.id == order.product_id.id):
+            proyeccion_venta_rango = self.env['proyeccion.venta.line'].search([('date_start','>=',self.date_start),('date_end','<=',self.date_end),('order_id.state','=','done')])
+            
+            for proyeccion in proyeccion_venta_rango.filtered(lambda r: r.product_id.id == order.product_id.id):
                 i += 1
                 columna_saldo = 0
-                sheet_libro.write(i,0,proyeccion.date_start,formato_fecha)
-                sheet_libro.write(i,1,proyeccion.product_qty,formato_miles)
+                sheet_libro.write(i,0,proyeccion.date_start.year,formato_miles)
+                sheet_libro.write(i,1,MESES[proyeccion.date_start.month])
+                sheet_libro.write(i,2,proyeccion.product_qty,formato_miles)
                 
                 #Voy a buscar la cantidad que se va a comprar por compra de la columna Entradas
                 orden_compra_linea = self.env['purchase.order.line'].read_group(
@@ -143,11 +174,11 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
                 if orden_compra_linea:
                     if 'product_qty' in orden_compra_linea[0]:
                         entrada = orden_compra_linea[0]['product_qty']
-                sheet_libro.write(i,2,entrada,formato_miles)
+                sheet_libro.write(i,3,entrada,formato_miles)
                 
                 #Calculo de la columna Saldo
                 columna_saldo = inventario_actual - proyeccion.product_qty + entrada
-                sheet_libro.write(i,3,columna_saldo,formato_miles)
+                sheet_libro.write(i,4,columna_saldo,formato_miles)
                 inventario_actual = columna_saldo
             
             if order.product_id.image_1920 != False:
