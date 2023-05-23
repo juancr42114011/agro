@@ -47,7 +47,7 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
     date_end = fields.Date(string='Fin', required=True, default=lambda self: fields.Date.context_today(self))
     #proyeccion_venta_id = fields.Many2one('proyeccion.venta')
     
-    archivo = fields.Binary('Archivo', filters='.xls')
+    archivo = fields.Binary('Archivo')
 
     def buscar_ventas_product(self, product_id, date_start, date_end):
         dominio = [
@@ -72,6 +72,11 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
             venta['price'] += linea.price_subtotal * (-1 if linea.move_id.move_type == 'out_refund' else 1) 
             #Variable tipo me ayuda a identificar si el datos es el año en curso o del año pasado, Actual año en curso
             venta['tipo'] = 'Actual'
+        
+        #Obtengo la existencia final de cada uno de los meses
+        existencia_producto = self.env['product.product'].with_context(to_date=date_end).search([('id','=',product_id)])
+        venta['existencia_mes'] = existencia_producto.qty_available
+        
         return venta
     
     def generar_excel(self):
@@ -80,6 +85,7 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
         formato_fecha = workbook.add_format({'num_format': 'dd/mm/yyyy'})
         formato_miles = workbook.add_format({'num_format': '#,##0'})
         formato_miles_decimal = workbook.add_format({'num_format': '#,##0.00'})
+        text_alinear_derecha = workbook.add_format().set_align('right')
         
         
         orders = self.env[self._context['active_model']].browse(self._context['active_ids'])
@@ -95,40 +101,75 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
             sheet_libro.write(i,2,order.product_id.name)
             i += 2
             sheet_libro.write(i,0,"Ventas del Producto")
+            i += 1
+            sheet_libro.write(i,0,"Tiempo")
+            sheet_libro.write(i,1,"Mes")
+            sheet_libro.write(i,2,"Cantidad")
+            sheet_libro.write(i,3,"Ventas Netas Sin Iva")
             
             fecha_actual = self.date_start
             
-            trimestres = {
-                1: [],
-                2: [],
-                3: [],
-                4: [],
-            }
+            trimestre_anio = {}
         
             while fecha_actual <= self.date_end:
                 
-                i += 1
+                if fecha_actual.year not in trimestre_anio:
+                    trimestre_anio[fecha_actual.year] = {}
+                
+                
                 ultimo_dia_mes = fecha_actual + relativedelta(day=1, months=+1, days=-1)
                 primer_dia_mes = fecha_actual
                 venta = self.ventas_product(order.product_id.id, primer_dia_mes, ultimo_dia_mes)
                 
                 trimestre = (fecha_actual.month - 1) // 3 + 1
                 venta['anio'] = primer_dia_mes.year
-                venta['mes'] = MESES[primer_dia_mes.month]
-                trimestres[trimestre].append(venta)                
+                venta['mes'] = primer_dia_mes.month
+                venta['mes_nombre'] = MESES[primer_dia_mes.month]
+
                 
-                sheet_libro.write(i,0,primer_dia_mes.year,formato_miles)
-                sheet_libro.write(i,1,MESES[primer_dia_mes.month])
-                sheet_libro.write(i,2,venta['quantity'],formato_miles)
-                sheet_libro.write(i,3,venta['price'],formato_miles_decimal)
+                if trimestre not in trimestre_anio[fecha_actual.year]:
+                    trimestre_anio[fecha_actual.year][trimestre] = []
+                
+                trimestre_anio[fecha_actual.year][trimestre].append(venta)
+                
+
                 
                 fecha_actual += datetime.timedelta(days=32)
                 fecha_actual = fecha_actual.replace(day=1)
             
-            #for trim in trimestres:
-            #    print(trimestres[trim])
-            #    print("--------------------------------")
+
+            i += 1
+            total_cantidad = 0
+            total_price = 0
+            for anio in trimestre_anio:
+                i += 1
+                sheet_libro.write(i,0,"Año " + str(anio),formato_miles)
             
+                for tri in trimestre_anio[anio]:
+                    i += 1
+                    sheet_libro.write(i,0,"Trimestre " + str(tri),formato_miles)
+                    
+                    tri_cantidad = 0.0
+                    tri_price = 0.0
+                    for mes in trimestre_anio[anio][tri]:
+                        i += 1
+                        sheet_libro.write(i,0,anio,formato_miles)
+                        sheet_libro.write(i,1,mes['mes_nombre'])
+                        sheet_libro.write(i,2,mes['quantity'],formato_miles)
+                        sheet_libro.write(i,3,mes['price'],formato_miles_decimal)
+                        sheet_libro.write(i,4,mes['existencia_mes'],formato_miles)
+                        tri_cantidad += mes['quantity']
+                        tri_price += mes['price']
+                    total_cantidad += tri_cantidad
+                    total_price += tri_price
+                    i += 1
+                    sheet_libro.write(i,1,"Sub-Total",text_alinear_derecha)
+                    sheet_libro.write(i,2,tri_cantidad,formato_miles)
+                    sheet_libro.write(i,3,tri_price,formato_miles_decimal)
+            i += 1
+            sheet_libro.write(i,1,"Total",text_alinear_derecha)
+            sheet_libro.write(i,2,total_cantidad,formato_miles)
+            sheet_libro.write(i,3,total_price,formato_miles_decimal)                
             
             i += 3
             sheet_libro.write(i,0,"Unidades Minimas en Inventario")
@@ -143,6 +184,9 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
             sheet_libro.write(i,0,"Inventario Actual")
             inventario_actual = order.product_id.qty_available
             sheet_libro.write(i,1, inventario_actual)
+            i += 1
+            sheet_libro.write(i,0,"Índice de rotación de inventario")
+            sheet_libro.write(i,1, 0)
             
             i += 3
             sheet_libro.write(i,0,"proyeccion")
@@ -156,6 +200,7 @@ class PurchaseOrderProyeccionWizard(models.TransientModel):
             sheet_libro.write(i,5,"Observaciones")
             
             proyeccion_venta_rango = self.env['proyeccion.venta.line'].search([('date_start','>=',self.date_start),('date_end','<=',self.date_end),('order_id.state','=','done')])
+            proyeccion_venta_rango = proyeccion_venta_rango.sorted(key=lambda fecha: fecha.date_start)
             
             for proyeccion in proyeccion_venta_rango.filtered(lambda r: r.product_id.id == order.product_id.id):
                 i += 1

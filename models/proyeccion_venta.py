@@ -65,8 +65,8 @@ class ProyeccionVenta(models.Model):
     user_id = fields.Many2one(
         'res.users', string='Usuario', index=True, tracking=True,
         default=lambda self: self.env.user, check_company=True)
-    a_presupuestar = fields.Boolean(string="A Prespuestar", help="A presupuetar.", widget="toggle")
-    archivo = fields.Binary('Archivo', filters='.xls')
+    a_presupuestar = fields.Boolean(string="A Prespuestar", help="A presupuetar.")
+    archivo = fields.Binary('Archivo')
     
     @api.model
     def create(self, vals):
