@@ -50,6 +50,14 @@ class ProyeccionVenta(models.Model):
         [(str(x), str(x)) for x in range(2020, date.today().year + 3)],
         string='Año',
         default=str(date.today().year),
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+    )
+    year_base = fields.Selection(
+        [(str(x), str(x)) for x in range(2020, date.today().year + 3)],
+        string='Año Base',
+        default=str(date.today().year),
+        readonly=True,
         states={'draft': [('readonly', False)]},
     )
     state = fields.Selection(selection=[
@@ -64,9 +72,12 @@ class ProyeccionVenta(models.Model):
     order_line = fields.One2many('proyeccion.venta.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
     user_id = fields.Many2one(
         'res.users', string='Usuario', index=True, tracking=True,
-        default=lambda self: self.env.user, check_company=True)
+        default=lambda self: self.env.user, check_company=True, readonly=True)
     a_presupuestar = fields.Boolean(string="A Prespuestar", help="A presupuetar.")
     archivo = fields.Binary('Archivo')
+    porcentaje_incremento = fields.Float(
+        readonly=True,
+        states={'draft': [('readonly', False)]}, string='%', help="Porcentaje de incremento")
     
     @api.model
     def create(self, vals):
@@ -127,8 +138,8 @@ class ProyeccionVenta(models.Model):
         dominio = [('detailed_type','in',('product',))]
         #dominio += [('id','in',(469,))]
         productos = self.env['product.product'].search(dominio)
-        self.date_start = datetime(year=int(self.year), month=1, day=1).date()
-        self.date_end = datetime(year=int(self.year), month=12, day=31).date()
+        self.date_start = datetime(year=int(self.year_base), month=1, day=1).date()
+        self.date_end = datetime(year=int(self.year_base), month=12, day=31).date()
         for producto in productos:
             
             fecha_actual = self.date_start
@@ -147,6 +158,7 @@ class ProyeccionVenta(models.Model):
                     'product_qty': venta['quantity'],
                     'price_unit': venta['price'],
                     'tipo': venta['tipo'],
+                    'product_qty_incremento': venta['quantity'] * (self.porcentaje_incremento / 100 + 1)
                 }
                 self.env['proyeccion.venta.line'].create(detalle)
 
@@ -286,3 +298,8 @@ class ProyeccionVentaLine(models.Model):
     display_type = fields.Selection([
         ('line_section', "Section"),
         ('line_note', "Note")], default=False, help="Technical field for UX purpose.")
+    
+    porcentaje_incremento = fields.Float(
+        related='order_id.porcentaje_incremento', readonly=True, help='Porcentaje de Incremento', string='%')
+    
+    product_qty_incremento = fields.Float(string='Cantidad Inc.', digits='Product Unit of Measure', required=True)
