@@ -12,6 +12,21 @@ import base64
 import io
 import logging
 
+MONTH_SELECTION = [
+    ('1', 'Enero'),
+    ('2', 'Febrero'),
+    ('3', 'Marzo'),
+    ('4', 'Abril'),
+    ('5', 'Mayo'),
+    ('6', 'Junio'),
+    ('7', 'Julio'),
+    ('8', 'Agosto'),
+    ('9', 'Septiembre'),
+    ('10', 'Octubre'),
+    ('11', 'Noviembre'),
+    ('12', 'Diciembre'),
+]
+
 class ProyeccionVenta(models.Model):
     _name = "proyeccion.venta"
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
@@ -178,7 +193,8 @@ class ProyeccionVenta(models.Model):
         sheet_libro.set_column(2,2,30)
         sheet_libro.set_column(28,28,20)
         sheet_libro.set_column(29,29,20)
-        sheet_libro.write(i,0,self.year)
+        sheet_libro.write(i,0,self.id)
+        sheet_libro.write(i,1,self.year)
         i += 1
         sheet_libro.write(i,0,"Marca")
         sheet_libro.write(i,1,"Categoria")
@@ -294,6 +310,7 @@ class ProyeccionVentaLine(models.Model):
     
     date_start = fields.Date(string='Fecha Inicio',)
     date_end = fields.Date(string='Fecha Fin',)
+    mes = fields.Selection(MONTH_SELECTION, compute='_calcular_mes', required=True)
     
     display_type = fields.Selection([
         ('line_section', "Section"),
@@ -303,3 +320,8 @@ class ProyeccionVentaLine(models.Model):
         related='order_id.porcentaje_incremento', readonly=True, help='Porcentaje de Incremento', string='%')
     
     product_qty_incremento = fields.Float(string='Cantidad Inc.', digits='Product Unit of Measure', required=True)
+    
+    def _calcular_mes(self):
+        for record in self:
+            if record.date_start:
+                record.mes = str(record.date_start.month)

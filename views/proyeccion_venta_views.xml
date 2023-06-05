@@ -18,7 +18,7 @@
                 <header>
                     <button name="action_done" class="btn-primary" type="object" string="Confirmar" states="draft"/>
                     <button name="calcular" type="object" string="Calcular" states="draft"/>
-                    <button name="excel" type="object" string="Excel" states="draft"/>
+                    <button name="excel" type="object" string="Excel" states="draft,done"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel" readonly="1"/>
                     <button name="action_cancel" type="object" string="Cancelar" states="done"/>
                     <button name="action_draft" type="object" string="Establecer a Borrador" states="cancel"/>
@@ -39,7 +39,7 @@
                             <field name="year_base"/>
                             <field name="date_start" invisible="1"/>
                             <field name="date_end" invisible="1"/>
-                            
+                            <field name="porcentaje_incremento"/>
                         </group>
                         <group>
                             <field name="archivo" readonly="1" filename="name"/>
@@ -68,14 +68,15 @@
                                         }"
                                         context="{'company_id': parent.company_id}"
                                         force_save="1" domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
-                                    <field name="name" widget="section_and_note_text"/>
-                                    <field name="date_start" optional="show"/>
-                                    <field name="date_end" optional="show"/>
+                                    <field name="name" widget="section_and_note_text" optional="hide"/>
+                                    <field name="mes" optional="show"/>
+                                    <field name="date_start" optional="hide"/>
+                                    <field name="date_end" optional="hide"/>
                                     <field name="product_qty" optional="show"/>
                                     <field name="product_qty_incremento" optional="show"/>
                                     <field name="price_unit" optional="show"/>
-                                    <field name="tipo" optional="show"/>
-                                    <field name="porcentaje_incremento" optional="show"/>
+                                    <field name="tipo" optional="hide"/>
+                                    <field name="porcentaje_incremento" optional="hide"/>
                                     
                                 </tree>
                             </field>
@@ -87,7 +88,7 @@
                                     <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                                     <field name="currency_id" groups="base.group_multi_currency" force_save="1"/>
                                     <field name="date" attrs="{'invisible': [('state','in',('purchase','done'))]}"/>
-                                    <field name="porcentaje_incremento"/>
+                                    
                                 </group>
                             </group>
                         </page>                            
@@ -108,16 +109,16 @@
                 <field name="message_unread" invisible="1"/>
                 <field name="name" string="Referencia" readonly="1" decoration-info="state == 'draft'" decoration-success="state == 'posted'"  decoration-danger="state == 'cancel'"/>
                 <field name="year" string="Año" readonly="1"/>
-                <field name="year_base" string="Año" readonly="1"/>
+                <field name="year_base" string="Base" readonly="1"/>
                 <field name="date" invisible="not context.get('quotation_only', False)" optional="show"/>
                 <field name="company_id" readonly="1" options="{'no_create': True}"
                     groups="base.group_multi_company" optional="show"/>
                 <field name="user_id" optional="show"/>
                 <field name="currency_id" invisible="1"/>
-                <field name="state" optional="show" decoration-info="state == 'draft'" decoration-success="state == 'posted'"  decoration-danger="state == 'cancel'"/>
+                <field name="state" optional="show" widget="badge" decoration-success="state == 'done'" decoration-info="state not in ('done', 'cancel', 'draft')" decoration-muted="state == 'draft'"/>
                 <field name="activity_exception_decoration" widget="activity_exception"/>
-                <field name="date_start" optional="show"/>
-                <field name="date_end" optional="show"/>
+                <field name="date_start" optional="hide"/>
+                <field name="date_end" optional="hide"/>
                 <field name="a_presupuestar" optional="show"/>
             </tree>
         </field>
