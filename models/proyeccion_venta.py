@@ -185,20 +185,24 @@ class ProyeccionVenta(models.Model):
         workbook = xlsxwriter.Workbook(f)
         formato_fecha = workbook.add_format({'num_format': 'dd/mm/yyyy'})
         formato_miles_decimal = workbook.add_format({'num_format': '#,##0.00'})
+        formato_miles_decimal_bold = workbook.add_format({'num_format': '#,##0.00','bold': True })
         sheet_libro = workbook.add_worksheet('Detalle')
+        bold = workbook.add_format({'bold': True})
 
         i = 0
         sheet_libro.set_column(0,0,10)
         sheet_libro.set_column(1,1,10)
-        sheet_libro.set_column(2,2,30)
-        sheet_libro.set_column(28,28,20)
-        sheet_libro.set_column(29,29,20)
+        sheet_libro.set_column(2,2,10)
+        sheet_libro.set_column(3,3,30)
+        sheet_libro.set_column(17,17,20)
+        sheet_libro.set_column(18,18,20)
         sheet_libro.write(i,0,self.id)
         sheet_libro.write(i,1,self.year)
         i += 1
-        sheet_libro.write(i,0,"Marca")
-        sheet_libro.write(i,1,"Categoria")
-        sheet_libro.write(i,2,"Producto")
+        sheet_libro.write(i,0,"Marca", bold)
+        sheet_libro.write(i,1,"Categoria", bold)
+        sheet_libro.write(i,2,"Código", bold)
+        sheet_libro.write(i,3,"Producto", bold)
         
         venta_producto = self.env['proyeccion.venta.line'].read_group(
                 domain=[('order_id', '=', self.id),],
@@ -212,26 +216,27 @@ class ProyeccionVenta(models.Model):
             product_id = self.env['product.product'].browse(linea_producto)
             sheet_libro.write(i,0, product_id.marca)
             sheet_libro.write(i,1, product_id.categ_id.name)
-            sheet_libro.write(i,2, product_id.display_name)
+            sheet_libro.write(i,2, product_id.default_code)
+            sheet_libro.write(i,3, product_id.name)
             
             venta_producto_mes = self.env['proyeccion.venta.line'].read_group(
                 domain=[('order_id', '=', self.id),('product_id','=',linea_producto)],
                 fields=['date_start', 'product_qty:sum', 'price_unit:sum'],
                 groupby=['date_start'],
             )
-            j=2
+            j=3
             inicio_colunas = False
             precio_total_venta = 0
             cantidad_suma_columna = []
             for dato in venta_producto_mes:
                 j += 1
                 titulo_mes = dato['date_start'][0:len(dato['date_start'])-5].capitalize()
-                sheet_libro.write(0,j, titulo_mes)
-                sheet_libro.write(1,j, 'Cant.')
+                sheet_libro.write(1,j, titulo_mes, bold)
+                #sheet_libro.write(1,j, 'Cant.')
                 sheet_libro.write(i,j, dato['product_qty'])
                 cantidad_suma_columna.append(j)
-                j += 1
-                sheet_libro.write(1,j, 'Precio')
+                #j += 1
+                #sheet_libro.write(1,j, 'Precio')
                 precio_unitario =  dato['price_unit'] / dato['product_qty'] if dato['product_qty'] != 0 else 0
                 
                 #sheet_libro.write(i,j, precio_unitario)
@@ -239,7 +244,7 @@ class ProyeccionVenta(models.Model):
                 precio_total_venta += dato['price_unit']
                 
                 formula = '={0}{1}*{2}{3}'.format(xl_col_to_name(j-1), i+1, 'AD', i+1)
-                sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
+                #sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
                 
                 if not inicio_colunas:
                     inicio_colunas = j
@@ -255,18 +260,21 @@ class ProyeccionVenta(models.Model):
             j += 1
             formula = '=' + formula_suma_columna[0:len(formula_suma_columna)-1]
 
-            sheet_libro.write(1,j,'Sub-Total')
+            sheet_libro.write(1,j,'Sub-Total', bold)
             sheet_libro.write_formula(i,j,formula)
             j += 1
-            sheet_libro.write(1,j, 'Venta Total Sin IVA')
+            sheet_libro.write(1,j, 'Venta Total Sin IVA', bold)
             sheet_libro.write(i,j, precio_total_venta, formato_miles_decimal)
             j += 1
-            sheet_libro.write(1,j, 'Precio Promedio Sin IVA')
+            sheet_libro.write(1,j, 'Precio Promedio Sin IVA', bold)
             formula = '=IFERROR({0}{1}/{2}{3},0)'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-2), i+1)
             sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
 
-            
-            
+        for numero_mes in range(4,19):
+            formula = '=SUM({0}{1}:{2}{3})'.format(xl_col_to_name(numero_mes), 3, xl_col_to_name(numero_mes), i+1)
+            sheet_libro.write(i+1,1,'Total', bold)
+            sheet_libro.write_formula(i+1, numero_mes, formula, formato_miles_decimal_bold)
+        
                 
         
         
