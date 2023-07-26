@@ -107,6 +107,23 @@ class ProyeccionVenta(models.Model):
         res = super(ProyeccionVenta, self_comp).create(vals)
         return res
     
+    def get_producto_precio_promdio(self, product_id, date_start, date_end):
+        dominio = [
+            ('product_id', '=', product_id),
+            ('move_id.invoice_date','>=',date_start),
+            ('move_id.invoice_date','<=',date_end),
+            ('move_id.journal_id.type','=','sale'),
+            ('move_id.state','=','posted'),
+        ]
+        venta_producto = self.env['account.move.line'].search(dominio)
+        cantidad_producto = 0.0
+        precio_producto = 0.0
+        for linea in venta_producto:
+            cantidad_producto += linea.quantity * (-1 if linea.move_id.move_type == 'out_refund' else 1)
+            precio_producto += linea.price_subtotal * (-1 if linea.move_id.move_type == 'out_refund' else 1)
+        
+        return round(precio_producto / cantidad_producto, 2)
+    
     def buscar_ventas_product(self, product_id, date_start, date_end):
         dominio = [
             ('product_id', '=', product_id),
@@ -151,13 +168,15 @@ class ProyeccionVenta(models.Model):
         #dominio = [('id','in',(4,585,406,404,437))]
         #dominio = [('id','in',(469,))]
         dominio = [('detailed_type','in',('product',))]
-        #dominio += [('id','in',(469,))]
+        dominio += [('id','in',(768,))]
         productos = self.env['product.product'].search(dominio)
         self.date_start = datetime(year=int(self.year_base), month=1, day=1).date()
         self.date_end = datetime(year=int(self.year_base), month=12, day=31).date()
         for producto in productos:
             
             fecha_actual = self.date_start
+            
+            precio_promedio = self.get_producto_precio_promdio(producto.id, self.date_start, self.date_end)
             
             while fecha_actual <= self.date_end:
                 
@@ -171,7 +190,8 @@ class ProyeccionVenta(models.Model):
                     'date_start': primer_dia_mes,
                     'date_end': ultimo_dia_mes,
                     'product_qty': venta['quantity'],
-                    'price_unit': venta['price'],
+                    #'price_unit': venta['price'],
+                    'price_unit': precio_promedio * (venta['quantity'] if venta['quantity'] != 0 else 0),
                     'tipo': venta['tipo'],
                     'product_qty_incremento': venta['quantity'] * (self.porcentaje_incremento / 100 + 1)
                 }
@@ -235,11 +255,11 @@ class ProyeccionVenta(models.Model):
                 #sheet_libro.write(1,j, 'Cant.')
                 sheet_libro.write(i,j, dato['product_qty'])
                 cantidad_suma_columna.append(j)
-                #j += 1
-                #sheet_libro.write(1,j, 'Precio')
+                j += 1
+                sheet_libro.write(1,j, 'Precio')
                 precio_unitario =  dato['price_unit'] / dato['product_qty'] if dato['product_qty'] != 0 else 0
                 
-                #sheet_libro.write(i,j, precio_unitario)
+                sheet_libro.write(i,j, precio_unitario)
                 
                 precio_total_venta += dato['price_unit']
                 
