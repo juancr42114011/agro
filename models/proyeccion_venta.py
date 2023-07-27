@@ -122,6 +122,8 @@ class ProyeccionVenta(models.Model):
             cantidad_producto += linea.quantity * (-1 if linea.move_id.move_type == 'out_refund' else 1)
             precio_producto += linea.price_subtotal * (-1 if linea.move_id.move_type == 'out_refund' else 1)
         
+        if cantidad_producto == 0:
+            return 0
         return round(precio_producto / cantidad_producto, 2)
     
     def buscar_ventas_product(self, product_id, date_start, date_end):
@@ -168,7 +170,7 @@ class ProyeccionVenta(models.Model):
         #dominio = [('id','in',(4,585,406,404,437))]
         #dominio = [('id','in',(469,))]
         dominio = [('detailed_type','in',('product',))]
-        dominio += [('id','in',(768,))]
+        #dominio += [('id','in',(768,))]
         productos = self.env['product.product'].search(dominio)
         self.date_start = datetime(year=int(self.year_base), month=1, day=1).date()
         self.date_end = datetime(year=int(self.year_base), month=12, day=31).date()
@@ -214,8 +216,23 @@ class ProyeccionVenta(models.Model):
         sheet_libro.set_column(1,1,10)
         sheet_libro.set_column(2,2,10)
         sheet_libro.set_column(3,3,30)
-        sheet_libro.set_column(17,17,20)
-        sheet_libro.set_column(18,18,20)
+        sheet_libro.set_column(27,27,20)
+        sheet_libro.set_column(28,30,20)
+        
+        
+        sheet_libro.set_column("F:F", None, None, {"hidden": True})
+        sheet_libro.set_column("H:H", None, None, {"hidden": True})
+        sheet_libro.set_column("J:J", None, None, {"hidden": True})
+        sheet_libro.set_column("L:L", None, None, {"hidden": True})
+        sheet_libro.set_column("N:N", None, None, {"hidden": True})
+        sheet_libro.set_column("P:P", None, None, {"hidden": True})
+        sheet_libro.set_column("R:R", None, None, {"hidden": True})
+        sheet_libro.set_column("T:T", None, None, {"hidden": True})
+        sheet_libro.set_column("V:V", None, None, {"hidden": True})
+        sheet_libro.set_column("X:X", None, None, {"hidden": True})
+        sheet_libro.set_column("Z:Z", None, None, {"hidden": True})
+        sheet_libro.set_column("AB:AB", None, None, {"hidden": True})
+        
         sheet_libro.write(i,0,self.id)
         sheet_libro.write(i,1,self.year)
         i += 1
@@ -247,6 +264,8 @@ class ProyeccionVenta(models.Model):
             j=3
             inicio_colunas = False
             precio_total_venta = 0
+            precio_unitario = 0
+            precio_unitario_venta = 0
             cantidad_suma_columna = []
             for dato in venta_producto_mes:
                 j += 1
@@ -258,6 +277,8 @@ class ProyeccionVenta(models.Model):
                 j += 1
                 sheet_libro.write(1,j, 'Precio')
                 precio_unitario =  dato['price_unit'] / dato['product_qty'] if dato['product_qty'] != 0 else 0
+                if precio_unitario != 0:
+                    precio_unitario_venta = precio_unitario
                 
                 sheet_libro.write(i,j, precio_unitario)
                 
@@ -283,14 +304,19 @@ class ProyeccionVenta(models.Model):
             sheet_libro.write(1,j,'Sub-Total', bold)
             sheet_libro.write_formula(i,j,formula)
             j += 1
-            sheet_libro.write(1,j, 'Venta Total Sin IVA', bold)
-            sheet_libro.write(i,j, precio_total_venta, formato_miles_decimal)
-            j += 1
             sheet_libro.write(1,j, 'Precio Promedio Sin IVA', bold)
-            formula = '=IFERROR({0}{1}/{2}{3},0)'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-2), i+1)
+            #formula = '=IFERROR({0}{1}/{2}{3},0)'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-2), i+1)
+            #sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
+            sheet_libro.write(i,j, precio_unitario_venta, formato_miles_decimal)            
+            j += 1
+            formula = '=IFERROR({0}{1}*{2}{3},0)'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-2), i+1)
+            sheet_libro.write(1,j, 'Venta Total Sin IVA', bold)
+            #sheet_libro.write(i,j, precio_total_venta, formato_miles_decimal)
             sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
+            
 
-        for numero_mes in range(4,19):
+
+        for numero_mes in range(4,31):
             formula = '=SUM({0}{1}:{2}{3})'.format(xl_col_to_name(numero_mes), 3, xl_col_to_name(numero_mes), i+1)
             sheet_libro.write(i+1,1,'Total', bold)
             sheet_libro.write_formula(i+1, numero_mes, formula, formato_miles_decimal_bold)
