@@ -47,3 +47,12 @@ class SaleOrder(models.Model):
                
         return super(SaleOrder, self)._action_confirm()
         
+class ResPartner(models.Model):
+    _inherit = "res.partner"
+
+    @api.model
+    def _get_default_company2(self):
+        print("----------------- si logro llegar")
+        return None
+    
+    company_id = fields.Many2one(default=_get_default_company2)
