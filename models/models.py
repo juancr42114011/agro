@@ -55,4 +55,5 @@ class ResPartner(models.Model):
         print("----------------- si logro llegar")
         return None
     
-    company_id = fields.Many2one(default=_get_default_company2)
+    #Definicion pendiente para poder crear empresas y que no de error.
+    #company_id = fields.Many2one(default=_get_default_company2)
