@@ -55,4 +55,4 @@ class ResPartner(models.Model):
         print("----------------- si logro llegar")
         return None
     
-    company_id = fields.Many2one(default=_get_default_company2)
+    #company_id = fields.Many2one(default=_get_default_company2)
