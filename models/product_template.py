@@ -12,6 +12,7 @@ class ProductTemplate(models.Model):
     cantidad_min_compra = fields.Float(
         'Cantidad de Compra Minima', default=0,
         help="Cantidad de Compra Minima")
+    a_presupuestar = fields.Boolean(default=True, help="Bandera que nos indica si se incluye en el presupuesto.")
     
 
 class ProductCategory(models.Model):

@@ -168,8 +168,8 @@ class ProyeccionVenta(models.Model):
         self.order_line.unlink()
         dominio = []
         #dominio = [('id','in',(4,585,406,404,437))]
-        #dominio = [('id','in',(469,))]
-        dominio = [('detailed_type','in',('product',))]
+        #dominio = [('id','in',(4,))]
+        dominio += [('detailed_type','in',('product',)),('a_presupuestar','=',True)]
         #dominio += [('id','in',(768,))]
         productos = self.env['product.product'].search(dominio)
         self.date_start = datetime(year=int(self.year_base), month=1, day=1).date()
@@ -208,38 +208,41 @@ class ProyeccionVenta(models.Model):
         formato_fecha = workbook.add_format({'num_format': 'dd/mm/yyyy'})
         formato_miles_decimal = workbook.add_format({'num_format': '#,##0.00'})
         formato_miles_decimal_bold = workbook.add_format({'num_format': '#,##0.00','bold': True })
-        sheet_libro = workbook.add_worksheet('Detalle')
+        sheet_libro = workbook.add_worksheet('Presupuesto Cantidades')
         bold = workbook.add_format({'bold': True})
 
         i = 0
         sheet_libro.set_column(0,0,10)
         sheet_libro.set_column(1,1,10)
-        sheet_libro.set_column(2,2,10)
-        sheet_libro.set_column(3,3,30)
+        sheet_libro.set_column(2,2,30)
+        sheet_libro.set_column(3,3,10)
+        sheet_libro.set_column(4,26,16)
         sheet_libro.set_column(27,27,20)
-        sheet_libro.set_column(28,30,20)
+        sheet_libro.set_column(28,33,20)
         
         
-        sheet_libro.set_column("F:F", None, None, {"hidden": True})
-        sheet_libro.set_column("H:H", None, None, {"hidden": True})
-        sheet_libro.set_column("J:J", None, None, {"hidden": True})
-        sheet_libro.set_column("L:L", None, None, {"hidden": True})
-        sheet_libro.set_column("N:N", None, None, {"hidden": True})
-        sheet_libro.set_column("P:P", None, None, {"hidden": True})
-        sheet_libro.set_column("R:R", None, None, {"hidden": True})
-        sheet_libro.set_column("T:T", None, None, {"hidden": True})
-        sheet_libro.set_column("V:V", None, None, {"hidden": True})
-        sheet_libro.set_column("X:X", None, None, {"hidden": True})
-        sheet_libro.set_column("Z:Z", None, None, {"hidden": True})
-        sheet_libro.set_column("AB:AB", None, None, {"hidden": True})
+        #sheet_libro.set_column("F:F", None, None, {"hidden": True})
+        #sheet_libro.set_column("H:H", None, None, {"hidden": True})
+        #sheet_libro.set_column("J:J", None, None, {"hidden": True})
+        #sheet_libro.set_column("L:L", None, None, {"hidden": True})
+        #sheet_libro.set_column("N:N", None, None, {"hidden": True})
+        #sheet_libro.set_column("P:P", None, None, {"hidden": True})
+        #sheet_libro.set_column("R:R", None, None, {"hidden": True})
+        #sheet_libro.set_column("T:T", None, None, {"hidden": True})
+        #sheet_libro.set_column("V:V", None, None, {"hidden": True})
+        #sheet_libro.set_column("X:X", None, None, {"hidden": True})
+        #sheet_libro.set_column("Z:Z", None, None, {"hidden": True})
+        #sheet_libro.set_column("AB:AB", None, None, {"hidden": True})
         
         sheet_libro.write(i,0,self.id)
         sheet_libro.write(i,1,self.year)
         i += 1
         sheet_libro.write(i,0,"Marca", bold)
         sheet_libro.write(i,1,"Categoria", bold)
-        sheet_libro.write(i,2,"Código", bold)
-        sheet_libro.write(i,3,"Producto", bold)
+        sheet_libro.write(i,2,"Producto", bold)
+        sheet_libro.write(i,3,"Código", bold)
+        sheet_libro.write(i,4,"Sociedad Comercial", bold)
+        
         
         venta_producto = self.env['proyeccion.venta.line'].read_group(
                 domain=[('order_id', '=', self.id),],
@@ -253,15 +256,15 @@ class ProyeccionVenta(models.Model):
             product_id = self.env['product.product'].browse(linea_producto)
             sheet_libro.write(i,0, product_id.marca)
             sheet_libro.write(i,1, product_id.categ_id.name)
-            sheet_libro.write(i,2, product_id.default_code)
-            sheet_libro.write(i,3, product_id.name)
+            sheet_libro.write(i,2, product_id.name)
+            sheet_libro.write(i,3, product_id.default_code)
             
             venta_producto_mes = self.env['proyeccion.venta.line'].read_group(
                 domain=[('order_id', '=', self.id),('product_id','=',linea_producto)],
                 fields=['date_start', 'product_qty:sum', 'price_unit:sum'],
                 groupby=['date_start'],
             )
-            j=3
+            j=4
             inicio_colunas = False
             precio_total_venta = 0
             precio_unitario = 0
@@ -275,17 +278,17 @@ class ProyeccionVenta(models.Model):
                 sheet_libro.write(i,j, dato['product_qty'])
                 cantidad_suma_columna.append(j)
                 j += 1
-                sheet_libro.write(1,j, 'Precio')
+                sheet_libro.write(1,j, 'Ventas '+titulo_mes, bold)
                 precio_unitario =  dato['price_unit'] / dato['product_qty'] if dato['product_qty'] != 0 else 0
                 if precio_unitario != 0:
                     precio_unitario_venta = precio_unitario
                 
-                sheet_libro.write(i,j, precio_unitario)
+                #sheet_libro.write(i,j, precio_unitario, formato_miles_decimal)
                 
                 precio_total_venta += dato['price_unit']
                 
                 formula = '={0}{1}*{2}{3}'.format(xl_col_to_name(j-1), i+1, 'AD', i+1)
-                #sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
+                sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
                 
                 if not inicio_colunas:
                     inicio_colunas = j
@@ -301,8 +304,11 @@ class ProyeccionVenta(models.Model):
             j += 1
             formula = '=' + formula_suma_columna[0:len(formula_suma_columna)-1]
 
-            sheet_libro.write(1,j,'Sub-Total', bold)
+            sheet_libro.write(1,j,'Total Cantidades', bold)
             sheet_libro.write_formula(i,j,formula)
+            j += 1
+            sheet_libro.write(1,j,'Costo Promedio', bold)
+            sheet_libro.write(i,j,product_id.standard_price, formato_miles_decimal)
             j += 1
             sheet_libro.write(1,j, 'Precio Promedio Sin IVA', bold)
             #formula = '=IFERROR({0}{1}/{2}{3},0)'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-2), i+1)
@@ -316,7 +322,7 @@ class ProyeccionVenta(models.Model):
             
 
 
-        for numero_mes in range(4,31):
+        for numero_mes in range(5,33):
             formula = '=SUM({0}{1}:{2}{3})'.format(xl_col_to_name(numero_mes), 3, xl_col_to_name(numero_mes), i+1)
             sheet_libro.write(i+1,1,'Total', bold)
             sheet_libro.write_formula(i+1, numero_mes, formula, formato_miles_decimal_bold)

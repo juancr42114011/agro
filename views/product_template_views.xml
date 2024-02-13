@@ -21,6 +21,13 @@
                         <field name="cantidad_min_compra" class="oe_inline" style="vertical-align:baseline"/>
                     </div>
                 </xpath>
+                <xpath expr="//page[@name='invoicing']" position="inside">
+                    <group name="presupuesto" groups="account.group_account_readonly">
+                        <group string="Presupuestos">
+                            <field name="a_presupuestar" groups="account.group_account_readonly"/>
+                        </group>
+                    </group>
+                </xpath>
             </field>
         </record>
 
