@@ -19,6 +19,7 @@
                     <button name="action_done" class="btn-primary" type="object" string="Confirmar" states="draft"/>
                     <button name="calcular" type="object" string="Calcular" states="draft"/>
                     <button name="excel" type="object" string="Excel" states="draft,done"/>
+                    <button name="cargar" type="object" string="Cargar" states="draft,done"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel" readonly="1"/>
                     <button name="action_cancel" type="object" string="Cancelar" states="done"/>
                     <button name="action_draft" type="object" string="Establecer a Borrador" states="cancel"/>
@@ -122,5 +123,36 @@
                 <field name="a_presupuestar" optional="show"/>
             </tree>
         </field>
+    </record>
+
+    <record id="view_proyeccion_venta_archivo" model="ir.ui.view">
+        <field name="name">proyeccion.venta.archivo.form</field>
+        <field name="model">proyeccion.venta.archivo</field>
+        <field name="arch" type="xml">
+            <form string="Cargar Archivo">
+                <field name="company_id" invisible="1"/>
+                <group>
+                     <group>
+                        <field name="archivo"/>
+                     </group>
+                </group>
+              
+                <footer>
+                    <button string='Cargar' name="cargar_factura" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+           </form>
+        </field>
+    </record>
+
+    <record id="action_view_proyeccion_venta_cargar_archivo" model="ir.actions.act_window">
+        <field name="name">Cargar Archivo</field>
+        <field name="res_model">proyeccion.venta.archivo</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_proyeccion_venta_archivo"/>
+        <field name="target">new</field>
+        <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
+        <field name="binding_model_id" ref="agro.model_proyeccion_venta" />
+        <field name="binding_view_types">list</field>
     </record>
 </odoo>

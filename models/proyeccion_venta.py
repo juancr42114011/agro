@@ -11,6 +11,9 @@ from xlsxwriter.utility import xl_col_to_name
 import base64
 import io
 import logging
+import tempfile
+import xlrd
+import binascii
 
 MONTH_SELECTION = [
     ('1', 'Enero'),
@@ -213,10 +216,12 @@ class ProyeccionVenta(models.Model):
 
         i = 0
         sheet_libro.set_column(0,0,10)
-        sheet_libro.set_column(1,1,10)
-        sheet_libro.set_column(2,2,30)
-        sheet_libro.set_column(3,3,10)
-        sheet_libro.set_column(4,26,16)
+        sheet_libro.set_column(1,1,20)
+        sheet_libro.set_column(2,2,20)
+        sheet_libro.set_column(3,3,50)
+        sheet_libro.set_column(4,4,16)
+        sheet_libro.set_column(5,5,26)
+        sheet_libro.set_column(6,26,16)
         sheet_libro.set_column(27,27,20)
         sheet_libro.set_column(28,33,20)
         
@@ -239,9 +244,10 @@ class ProyeccionVenta(models.Model):
         i += 1
         sheet_libro.write(i,0,"Marca", bold)
         sheet_libro.write(i,1,"Categoria", bold)
-        sheet_libro.write(i,2,"Producto", bold)
-        sheet_libro.write(i,3,"Código", bold)
-        sheet_libro.write(i,4,"Sociedad Comercial", bold)
+        sheet_libro.write(i,2,"Sub-Categoria", bold)
+        sheet_libro.write(i,3,"Producto", bold)
+        sheet_libro.write(i,4,"Código", bold)
+        sheet_libro.write(i,5,"Sociedad Comercial", bold)
         
         
         venta_producto = self.env['proyeccion.venta.line'].read_group(
@@ -255,16 +261,18 @@ class ProyeccionVenta(models.Model):
             i += 1
             product_id = self.env['product.product'].browse(linea_producto)
             sheet_libro.write(i,0, product_id.marca)
-            sheet_libro.write(i,1, product_id.categ_id.name)
-            sheet_libro.write(i,2, product_id.name)
-            sheet_libro.write(i,3, product_id.default_code)
+            sheet_libro.write(i,1, product_id.categ_id.parent_id.name)
+            sheet_libro.write(i,2, product_id.categ_id.name)
+            sheet_libro.write(i,3, product_id.name)
+            sheet_libro.write(i,4, product_id.default_code)
+            sheet_libro.write(i,5, product_id.categ_id.analytic_account_id.name)
             
             venta_producto_mes = self.env['proyeccion.venta.line'].read_group(
                 domain=[('order_id', '=', self.id),('product_id','=',linea_producto)],
                 fields=['date_start', 'product_qty:sum', 'price_unit:sum'],
                 groupby=['date_start'],
             )
-            j=4
+            j=5
             inicio_colunas = False
             precio_total_venta = 0
             precio_unitario = 0
@@ -287,7 +295,7 @@ class ProyeccionVenta(models.Model):
                 
                 precio_total_venta += dato['price_unit']
                 
-                formula = '={0}{1}*{2}{3}'.format(xl_col_to_name(j-1), i+1, 'AD', i+1)
+                formula = '={0}{1}*{2}{3}'.format(xl_col_to_name(j-1), i+1, 'AG', i+1)
                 sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
                 
                 if not inicio_colunas:
@@ -322,7 +330,7 @@ class ProyeccionVenta(models.Model):
             
 
 
-        for numero_mes in range(5,33):
+        for numero_mes in range(6,33):
             formula = '=SUM({0}{1}:{2}{3})'.format(xl_col_to_name(numero_mes), 3, xl_col_to_name(numero_mes), i+1)
             sheet_libro.write(i+1,1,'Total', bold)
             sheet_libro.write_formula(i+1, numero_mes, formula, formato_miles_decimal_bold)
@@ -350,6 +358,12 @@ class ProyeccionVenta(models.Model):
     
     def action_draft(self):
         return self.write({'state': 'draft'})
+    
+    def cargar(self):
+        print("hola ligia te amo mucho")
+        action = self.env["ir.actions.actions"]._for_xml_id("agro.action_view_proyeccion_venta_cargar_archivo")
+
+        return action
 
 
 class ProyeccionVentaLine(models.Model):
@@ -370,7 +384,7 @@ class ProyeccionVentaLine(models.Model):
     
     date_start = fields.Date(string='Fecha Inicio',)
     date_end = fields.Date(string='Fecha Fin',)
-    mes = fields.Selection(MONTH_SELECTION, compute='_calcular_mes', required=True)
+    mes = fields.Selection(MONTH_SELECTION, compute='_calcular_mes', required=True, store=True)
     
     display_type = fields.Selection([
         ('line_section', "Section"),
@@ -385,3 +399,66 @@ class ProyeccionVentaLine(models.Model):
         for record in self:
             if record.date_start:
                 record.mes = str(record.date_start.month)
+
+
+class ProyeccionVentaCargaArchivo(models.TransientModel):
+    """
+    Clase para cargar el archivo de la proyeccion de venta.
+    """
+    _name = 'proyeccion.venta.archivo'
+    _description = 'Account Move Reversal'
+    _check_company_auto = True
+    
+    company_id = fields.Many2one('res.company', required=True, readonly=True)
+    move_ids = fields.Many2many('proyeccion.venta')
+    archivo = fields.Binary('Archivo')
+    
+    def cargar_factura(self):
+        print("---------------------------------------------Inicio")
+        print(self.move_ids)
+        fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
+        fp.write(binascii.a2b_base64(self.archivo))
+        fp.seek(0)
+        values = []
+        workbook = xlrd.open_workbook(fp.name)
+        sheet = workbook.sheet_by_index(0)
+        
+        
+        
+        
+        i = 0
+
+        for row_no in range(sheet.nrows):
+            i += 1
+            if row_no <= 0:
+                fields = map(lambda row: row.value.encode(
+                    'utf-8'), sheet.row(row_no))
+            else:
+                fila = list(map(lambda row: isinstance(row.value, bytes) and row.value.encode(
+                    'utf-8') or str(row.value), sheet.row(row_no)))
+                
+                if i<=2 or fila[1] == 'Total':
+                    continue
+                print(fila)
+                proyeccion_venta_linea = self.move_ids.order_line.search([('product_id.default_code','=',fila[4])])
+                if not proyeccion_venta_linea:
+                    raise UserError(_('El producto %s no tiene codigo de producto.') % (fila[3],))
+                print(proyeccion_venta_linea[0].name)
+                
+        print("---------------------------------------------Fin")
+        
+        
+    @api.model
+    def default_get(self, fields):
+        res = super(ProyeccionVentaCargaArchivo, self).default_get(fields)
+        move_ids = self.env['proyeccion.venta'].browse(self.env.context['active_ids']) if self.env.context.get('active_model') == 'proyeccion.venta' else self.env['proyeccion.venta']
+
+       
+        
+        if 'company_id' in fields:
+            res['company_id'] = move_ids.company_id.id or self.env.company.id
+        if 'move_ids' in fields:
+            res['move_ids'] = [(6, 0, move_ids.ids)]
+        if 'refund_method' in fields:
+            res['refund_method'] = (len(move_ids) > 1 or move_ids.move_type == 'entry') and 'cancel' or 'refund'
+        return res
