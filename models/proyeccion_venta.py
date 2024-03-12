@@ -196,7 +196,8 @@ class ProyeccionVenta(models.Model):
                     'date_end': ultimo_dia_mes,
                     'product_qty': venta['quantity'],
                     #'price_unit': venta['price'],
-                    'price_unit': precio_promedio * (venta['quantity'] if venta['quantity'] != 0 else 0),
+                    'price_unit': precio_promedio,
+                    'standard_price': producto.standard_price,
                     'tipo': venta['tipo'],
                     'product_qty_incremento': venta['quantity'] * (self.porcentaje_incremento / 100 + 1)
                 }
@@ -269,7 +270,7 @@ class ProyeccionVenta(models.Model):
             
             venta_producto_mes = self.env['proyeccion.venta.line'].read_group(
                 domain=[('order_id', '=', self.id),('product_id','=',linea_producto)],
-                fields=['date_start', 'product_qty:sum', 'price_unit:sum'],
+                fields=['date_start', 'product_qty:sum', 'price_unit:sum', 'standard_price:avg'],
                 groupby=['date_start'],
             )
             j=5
@@ -277,6 +278,7 @@ class ProyeccionVenta(models.Model):
             precio_total_venta = 0
             precio_unitario = 0
             precio_unitario_venta = 0
+            costo_unitario = 0
             cantidad_suma_columna = []
             for dato in venta_producto_mes:
                 j += 1
@@ -287,13 +289,14 @@ class ProyeccionVenta(models.Model):
                 cantidad_suma_columna.append(j)
                 j += 1
                 sheet_libro.write(1,j, 'Ventas '+titulo_mes, bold)
-                precio_unitario =  dato['price_unit'] / dato['product_qty'] if dato['product_qty'] != 0 else 0
+                precio_unitario =  dato['price_unit']
                 if precio_unitario != 0:
                     precio_unitario_venta = precio_unitario
                 
                 #sheet_libro.write(i,j, precio_unitario, formato_miles_decimal)
                 
                 precio_total_venta += dato['price_unit']
+                costo_unitario = dato['standard_price']
                 
                 formula = '={0}{1}*{2}{3}'.format(xl_col_to_name(j-1), i+1, 'AG', i+1)
                 sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
@@ -316,14 +319,14 @@ class ProyeccionVenta(models.Model):
             sheet_libro.write_formula(i,j,formula)
             j += 1
             sheet_libro.write(1,j,'Costo Promedio', bold)
-            sheet_libro.write(i,j,product_id.standard_price, formato_miles_decimal)
+            sheet_libro.write(i,j,costo_unitario, formato_miles_decimal)
             j += 1
             sheet_libro.write(1,j, 'Precio Promedio Sin IVA', bold)
             #formula = '=IFERROR({0}{1}/{2}{3},0)'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-2), i+1)
             #sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
             sheet_libro.write(i,j, precio_unitario_venta, formato_miles_decimal)            
             j += 1
-            formula = '=IFERROR({0}{1}*{2}{3},0)'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-2), i+1)
+            formula = '=IFERROR({0}{1}*{2}{3},0)'.format(xl_col_to_name(j-1), i+1, xl_col_to_name(j-3), i+1)
             sheet_libro.write(1,j, 'Venta Total Sin IVA', bold)
             #sheet_libro.write(i,j, precio_total_venta, formato_miles_decimal)
             sheet_libro.write_formula(i,j, formula, formato_miles_decimal)
@@ -376,6 +379,7 @@ class ProyeccionVentaLine(models.Model):
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)], change_default=True)
     product_qty = fields.Float(string='Cantidad', digits='Product Unit of Measure', required=True)
     price_unit = fields.Float(string='Precio Unid.', required=True, digits='Product Price')
+    standard_price = fields.Float(string='Costo Unid.', required=True, digits='Product Price')
     tipo = fields.Char(string='Tipo', readonly=True)
     
     order_id = fields.Many2one('proyeccion.venta', string='Order Reference', index=True, required=True, ondelete='cascade')
@@ -384,7 +388,7 @@ class ProyeccionVentaLine(models.Model):
     
     date_start = fields.Date(string='Fecha Inicio',)
     date_end = fields.Date(string='Fecha Fin',)
-    mes = fields.Selection(MONTH_SELECTION, compute='_calcular_mes', required=True, store=True)
+    mes = fields.Selection(MONTH_SELECTION, compute='_calcular_mes', store=True)
     
     display_type = fields.Selection([
         ('line_section', "Section"),
@@ -395,6 +399,7 @@ class ProyeccionVentaLine(models.Model):
     
     product_qty_incremento = fields.Float(string='Cantidad Inc.', digits='Product Unit of Measure', required=True)
     
+    @api.depends('date_start')
     def _calcular_mes(self):
         for record in self:
             if record.date_start:
@@ -413,9 +418,43 @@ class ProyeccionVentaCargaArchivo(models.TransientModel):
     move_ids = fields.Many2many('proyeccion.venta')
     archivo = fields.Binary('Archivo')
     
+    def _cambiar_cantidad(self, codigo, cantidad, i, costo, precio):
+        mes = 0
+        for presupuesto in self.move_ids:
+            if i == 6:
+                mes = 1
+            elif i == 8:
+                mes = 2
+            elif i == 10:
+                mes = 3
+            elif i == 12:
+                mes = 4
+            elif i == 14:
+                mes = 5
+            elif i == 16:
+                mes = 6
+            elif i == 18:
+                mes = 8
+            elif i == 20:
+                mes = 9
+            elif i == 22:
+                mes = 10
+            elif i == 24:
+                mes = 11
+            elif i == 26:
+                mes = 12
+            actualizar_linea = presupuesto.order_line.search([('product_id.default_code','=',codigo),('mes','=',mes)])
+            actualizar_linea.product_qty = cantidad
+            actualizar_linea.standard_price = costo
+
+            if precio == 0:
+                actualizar_linea.price_unit = precio
+            else:        
+                actualizar_linea.price_unit = float(precio) 
+            
+    
     def cargar_factura(self):
-        print("---------------------------------------------Inicio")
-        print(self.move_ids)
+
         fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
         fp.write(binascii.a2b_base64(self.archivo))
         fp.seek(0)
@@ -440,12 +479,16 @@ class ProyeccionVentaCargaArchivo(models.TransientModel):
                 if i<=2 or fila[1] == 'Total':
                     continue
                 print(fila)
+                
+                i = 4
+                while i <= 27:
+                    i += 2
+
+                    self._cambiar_cantidad(fila[4], fila[i], i, fila[31], fila[32])
                 proyeccion_venta_linea = self.move_ids.order_line.search([('product_id.default_code','=',fila[4])])
                 if not proyeccion_venta_linea:
                     raise UserError(_('El producto %s no tiene codigo de producto.') % (fila[3],))
-                print(proyeccion_venta_linea[0].name)
-                
-        print("---------------------------------------------Fin")
+
         
         
     @api.model
