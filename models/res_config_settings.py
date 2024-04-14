@@ -25,7 +25,7 @@ class ResCompany(models.Model):
         ],)
     
     def _parse_banguat_data(self, available_currencies):
-        """ Bank of Guatemala
+        """ Bank of Guatemala 
         Info: https://banguat.gob.gt/tipo_cambio/
         * SOAP URL: https://www.banguat.gob.gt/variables/ws/TipoCambio.asmx
         * Exchange rate is expressed as 1 unit of USD converted into GTQ
