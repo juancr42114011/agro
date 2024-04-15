@@ -18,7 +18,7 @@
     # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.4',
+    'version': '0.5',
 
     # any module necessary for this one to work correctly
     'depends': ['account','imporgesa','stock'],
@@ -33,8 +33,10 @@
         'data/account_journal_data.xml',
         'data/ir_sequence_data.xml',
         'views/proyeccion_venta_views.xml',
+        'report/account_report.xml',
         'report/sale_report.xml',
         'wizard/purchase_order_views_wizard.xml',
+        'wizard/libro_contable_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
