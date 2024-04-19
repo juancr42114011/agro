@@ -82,7 +82,7 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
 
 
 class ReporteLibroContableMayorXlsx(models.AbstractModel):
-    _name = 'report.l10n_gt_sat.libro_contable_mayor_xlsx'
+    _name = 'report.agro.libro_contable_mayor_xlsx'
     _description = 'reporte libro contable mayor'
 
     def columns_range(self,start,end,point1,point2):

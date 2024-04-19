@@ -33,10 +33,10 @@
         'data/account_journal_data.xml',
         'data/ir_sequence_data.xml',
         'views/proyeccion_venta_views.xml',
-        'report/account_report.xml',
         'report/sale_report.xml',
         'wizard/purchase_order_views_wizard.xml',
         'wizard/libro_contable_view.xml',
+        'views/report_libro_diario.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
@@ -45,6 +45,7 @@
     'assets': {
         'web.report_assets_common': [
             'agro/static/src/scss/report_product_label.scss',
+            'agro/static/src/scss/report.css',
         ],
     },
 }

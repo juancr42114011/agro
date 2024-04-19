@@ -1,23 +1,37 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.tools import date_utils
+from dateutil.relativedelta import relativedelta
+
 
 class LibroContableReport(models.TransientModel):
     _name = "libro_contable.report"
     _description = "Reporte de Libros Contables"
+    
+    def _get_start_mondth_date(self):
+        today = fields.Date.today() - relativedelta(months=1)
+        return date_utils.start_of(today, 'month')
+        
+    def _get_end_mondth_date(self):
+        today = fields.Date.today() - relativedelta(months=1)
+        return date_utils.end_of(today, 'month')
+
+
+
 
     company_id = fields.Many2one('res.company', string='Company', readonly=True, default=lambda self: self.env.user.company_id)
     journal_ids = fields.Many2many('account.journal',
                                    'account_report_libro_contable_journal_rel',
                                    'account_id',
                                    'journal_id',
-                                   string='Journals',
+                                   string='Diarios',
                                    domain=lambda self: [("company_id", "=", self.env.user.company_id.id)]
                                    )
-    date_from = fields.Date(string='Start Date', required=True)
-    date_to = fields.Date(string='End Date', required=True)
-    target_move = fields.Selection([('posted', 'All Posted Entries'),
-                                    ('all', 'All Entries'),
+    date_from = fields.Date(string='Start Date', required=True, default=_get_start_mondth_date)
+    date_to = fields.Date(string='End Date', required=True, default=_get_end_mondth_date)
+    target_move = fields.Selection([('posted', 'Asientos Publicados'),
+                                    ('all', 'Todos los Asientos'),
                                     ], string='Target Moves', required=True, default='posted')
     libro = fields.Selection([('diario', 'Diario'),
                             ('mayor','Mayor'),
@@ -47,9 +61,9 @@ class LibroContableReport(models.TransientModel):
     def _print_report(self, data):
         libro = data['form'].get('libro')
         if libro=='diario':
-            return self.env.ref('agro.action_report_l10n_gt_sat_diario').report_action(self, data=data, config=False)
+            return self.env.ref('agro.action_report_agro_diario').report_action(self, data=data, config=False)
         else:
-            return self.env.ref('agro.action_report_l10n_gt_sat_libro_mayor').report_action(self, data=data, config=False)
+            return self.env.ref('agro.action_report_agro_libro_mayor').report_action(self, data=data, config=False)
 
     def export_xls(self):
         self.ensure_one()
