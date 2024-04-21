@@ -3,7 +3,10 @@
 from odoo import models,api
 from odoo.tools.misc import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
-
+import base64
+import io
+import xlrd
+from odoo.tools.misc import xlsxwriter
 
 class ReporteLibroContableDiarioXlsx(models.AbstractModel):
     _name ='report.agro.libro_contable_diario_xlsx'
@@ -78,6 +81,7 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
                 sheet.merge_range(self.columns_range('I','J',row,row),account['encabezado']['debit'],totales)
                 sheet.merge_range(self.columns_range('K','L',row,row),account['encabezado']['credit'],totales)
                 row+=2
+
 
 
 
