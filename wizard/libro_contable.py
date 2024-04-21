@@ -23,13 +23,13 @@ class LibroContableReport(models.TransientModel):
 
 
 
-    company_id = fields.Many2one('res.company', string='Company', readonly=True, default=lambda self: self.env.user.company_id)
+    company_id = fields.Many2one('res.company', string='Company', readonly=True, default=lambda self: self.env.company)
     journal_ids = fields.Many2many('account.journal',
                                    'account_report_libro_contable_journal_rel',
                                    'account_id',
                                    'journal_id',
                                    string='Diarios',
-                                   domain=lambda self: [("company_id", "=", self.env.user.company_id.id)]
+                                   domain="[('company_id', '=', company_id)]"
                                    )
     date_from = fields.Date(string='Start Date', required=True, default=_get_start_mondth_date)
     date_to = fields.Date(string='End Date', required=True, default=_get_end_mondth_date)
