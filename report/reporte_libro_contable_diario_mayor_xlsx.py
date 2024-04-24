@@ -7,6 +7,7 @@ import base64
 import io
 import xlrd
 from odoo.tools.misc import xlsxwriter
+from datetime import datetime
 
 class ReporteLibroContableDiarioXlsx(models.AbstractModel):
     _name ='report.agro.libro_contable_diario_xlsx'
@@ -21,6 +22,7 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
         sheet = workbook.add_worksheet('Libro Diario')
         negritaizquierda = workbook.add_format({'bold': True,'align':'left','valign':'vcenter','text_wrap':1})
         negritaderecha = workbook.add_format({'bold': True,'align':'right','valign':'vcenter','text_wrap':1})
+        date_format = workbook.add_format({'num_format': 'dd/mm/yyyy','align':'right','valign':'vcenter','text_wrap':1})
         negritacentro = workbook.add_format({'bold': True,'align':'center','valign':'vcenter','text_wrap':1})
         celda_con_borde_alizquierda = workbook.add_format({'bold': True,'align':'left','valign':'vcenter','text_wrap':1,'border':1})
         celda_con_borde_alderecha = workbook.add_format({'bold': True,'align':'right','valign':'vcenter','text_wrap':1,'border':1})
@@ -57,7 +59,12 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
                 sheet.merge_range(self.columns_range('A','B',3,3),'Date to: {}'.format(datas.date_to))
             row=5
             for account in accounts_res:
-                sheet.merge_range(self.columns_range('A','B',row,row),account['encabezado']['ldate'],negritaizquierda)
+
+                fecha_encabezado = account['encabezado']['ldate']
+                print("----------------------------")
+                print(fecha_encabezado)
+                print(type(fecha_encabezado))
+                sheet.merge_range(self.columns_range('A','B',row,row),fecha_encabezado,date_format)
                 sheet.merge_range(self.columns_range('C','F',row,row),account['encabezado']['journalname'],negritacentro)
                 sheet.merge_range(self.columns_range('G','H',row,row),'',negritacentro)
                 sheet.merge_range(self.columns_range('I','J',row,row),'',negritacentro)
@@ -70,7 +77,7 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
                 sheet.merge_range(self.columns_range('K','L',row,row),'Haber',celda_con_borde_alderecha)
                 row+=1
                 for line in account['detalle']:
-                    sheet.merge_range(self.columns_range('A','B',row,row),line['ldate'],)
+                    sheet.merge_range(self.columns_range('A','B',row,row),line['ldate'],date_format)
                     sheet.merge_range(self.columns_range('C','D',row,row),line['acode'],)
                     sheet.merge_range(self.columns_range('E','H',row,row),line['aname'],)
                     sheet.merge_range(self.columns_range('I','J',row,row),line['debit'],cantidades_sin_bordes)
@@ -81,6 +88,8 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
                 sheet.merge_range(self.columns_range('I','J',row,row),account['encabezado']['debit'],totales)
                 sheet.merge_range(self.columns_range('K','L',row,row),account['encabezado']['credit'],totales)
                 row+=2
+            
+
 
 
 

@@ -8,10 +8,28 @@ from odoo import api, models, _
 import sys
 from odoo.tools.misc import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
+from datetime import datetime
 
+MESES = {
+            1:'Enero',
+            2:'Febrero',
+            3:'Marzo',
+            4:'Abril',
+            5:'Mayo',
+            6:'Junio',
+            7:'Julio',
+            8:'Agosto',
+            9:'Septiembre',
+            10:'Octubre',
+            11:'Noviembre',
+            12:'Diciembre',
+        }
 class ReportLibroContable(models.AbstractModel):
     _name = 'report.agro.report_libro_contable_diario'
     _description = 'Reporte Libro Contable Diario'
+    
+    
+
 
     def _get_account_move_entry(self, journals, accounts):
         cr = self.env.cr
@@ -119,6 +137,14 @@ class ReportLibroContable(models.AbstractModel):
         accounts = docs if model == 'account.account' else self.env['account.account'].search([])
 
         accounts_res = self.with_context(data['form'].get('used_context',{}))._get_account_move_entry(journals,accounts)
+        
+
+        
+        fecha_reporte = datetime.strptime(data['form'].get('date_from'), '%Y-%m-%d')
+        fecha_reporte_anio = fecha_reporte.year
+        fecha_reporte_mes = fecha_reporte.month
+        
+
 
         return {
             'doc_ids': docids,
@@ -126,6 +152,8 @@ class ReportLibroContable(models.AbstractModel):
             'data': data['form'],
             'docs': docs,
             'time': time,
+            'anio': fecha_reporte_anio,
+            'mes': MESES[fecha_reporte_mes],
             'Accounts': accounts_res,
             'print_journal': codes,
         }
@@ -304,6 +332,10 @@ class ReportLibroContableMayor(models.AbstractModel):
             journals = self.env['account.journal'].search([('id', 'in', data['form']['journal_ids'])])
         accounts = self.env['account.account'].search([('company_id', '=', data['form']['company_id'][0])],order="code")
         accounts_res, total_general = self.with_context(data['form'].get('used_context',{}))._get_account_move_entry(journals,accounts)
+        
+        fecha_reporte = datetime.strptime(data['form'].get('date_from'), '%Y-%m-%d')
+        fecha_reporte_anio = fecha_reporte.year
+        fecha_reporte_mes = fecha_reporte.month
 
         return {
             'doc_ids': docids,
@@ -311,6 +343,8 @@ class ReportLibroContableMayor(models.AbstractModel):
             'data': data['form'],
             'docs': docs,
             'time': time,
+            'anio': fecha_reporte_anio,
+            'mes': MESES[fecha_reporte_mes],            
             'Accounts': accounts_res,
             'TotalGeneral': total_general,
             'print_journal': codes,
