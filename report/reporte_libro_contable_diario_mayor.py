@@ -103,12 +103,14 @@ class ReportLibroContable(models.AbstractModel):
             line_dias[row['dia']][row['ljournal_id']].append(row)
 
         # Calculate the debit, credit and balance for Accounts
+        total_general = dict((fn, 0.0) for fn in ['credit', 'debit','balance'])
+        total = []
         account_res = []
+        
         for account in line_dias:
             dia = line_dias.get(account)
             for cuenta in dia:
                 if dia.get(cuenta):
-                    #print(dia.get(cuenta)[0])
                     res = {}
                     res['encabezado'] = dia.get(cuenta)[0]
                     detalle = []
@@ -116,7 +118,11 @@ class ReportLibroContable(models.AbstractModel):
                         detalle.append(dia.get(cuenta)[x])
                     res['detalle'] = detalle
                     account_res.append(res)
-        return account_res
+                    total_general['debit'] += res['encabezado']['debit']
+                    total_general['credit'] += res['encabezado']['credit']
+                    total_general['balance'] += res['encabezado']['balance']
+        total.append(total_general)
+        return account_res, total
 
 
 
@@ -136,7 +142,7 @@ class ReportLibroContable(models.AbstractModel):
             journals = self.env['account.journal'].search([('id', 'in', data['form']['journal_ids'])])
         accounts = docs if model == 'account.account' else self.env['account.account'].search([])
 
-        accounts_res = self.with_context(data['form'].get('used_context',{}))._get_account_move_entry(journals,accounts)
+        accounts_res, total_general = self.with_context(data['form'].get('used_context',{}))._get_account_move_entry(journals,accounts)
         
 
         
@@ -155,6 +161,7 @@ class ReportLibroContable(models.AbstractModel):
             'anio': fecha_reporte_anio,
             'mes': MESES[fecha_reporte_mes],
             'Accounts': accounts_res,
+            'TotalGeneral': total_general,
             'print_journal': codes,
         }
 

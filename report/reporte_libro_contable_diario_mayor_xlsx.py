@@ -51,7 +51,7 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
                         ,'date_to':datas.date_to
             }
             accounts = self.env['account.account'].search([('company_id', '=', datas.company_id.id)])
-            accounts_res = self.env['report.agro.report_libro_contable_diario'].with_context(contexto)._get_account_move_entry(journals,accounts)
+            accounts_res, total_general = self.env['report.agro.report_libro_contable_diario'].with_context(contexto)._get_account_move_entry(journals,accounts)
             sheet.merge_range(self.columns_range('A','L',1,1),'{} : Libro Diario'.format(datas.company_id.name),negritacentro)
             if datas.date_from:
                 sheet.merge_range(self.columns_range('A','B',2,2),'Date from: {}'.format(datas.date_from))
@@ -61,9 +61,6 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
             for account in accounts_res:
 
                 fecha_encabezado = account['encabezado']['ldate']
-                print("----------------------------")
-                print(fecha_encabezado)
-                print(type(fecha_encabezado))
                 sheet.merge_range(self.columns_range('A','B',row,row),fecha_encabezado,date_format)
                 sheet.merge_range(self.columns_range('C','F',row,row),account['encabezado']['journalname'],negritacentro)
                 sheet.merge_range(self.columns_range('G','H',row,row),'',negritacentro)
@@ -84,10 +81,16 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
                     sheet.merge_range(self.columns_range('K','L',row,row),line['credit'],cantidades_sin_bordes)
                     row+=1
                 sheet.merge_range(self.columns_range('A','B',row,row),'',totales_left)
-                sheet.merge_range(self.columns_range('C','H',row,row),'Total',totales_left)
+                sheet.merge_range(self.columns_range('C','H',row,row),'Sub Total',totales_left)
                 sheet.merge_range(self.columns_range('I','J',row,row),account['encabezado']['debit'],totales)
                 sheet.merge_range(self.columns_range('K','L',row,row),account['encabezado']['credit'],totales)
                 row+=2
+            
+            for total in total_general:
+                sheet.merge_range(self.columns_range('A','B',row,row),'Total',totales_left)
+                sheet.merge_range(self.columns_range('C','H',row,row),'',totales_left)
+                sheet.merge_range(self.columns_range('I','J',row,row),total['debit'],totales)
+                sheet.merge_range(self.columns_range('K','L',row,row),total['credit'],totales)
             
 
 

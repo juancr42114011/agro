@@ -245,7 +245,7 @@ LIBRO DIARIO
 								</tr>
 								<tr style="font-weight: bold;">
 									<td class="sat_td_stotal"><![CDATA[&nbsp;]]></td>
-									<td class="sat_td_stotal">Total</td>
+									<td class="sat_td_stotal">Sub Total</td>
 									<td class="sat_td_stotal"><![CDATA[&nbsp;]]></td>
 									<td class="text-right sat_td_stotal">
 										<span t-esc="encabezado['debit']"
@@ -253,6 +253,21 @@ LIBRO DIARIO
 									</td>
 									<td class="text-right sat_td_stotal">
 										<span t-esc="encabezado['credit']"
+											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+									</td>
+								</tr>
+							</t>
+							<t t-foreach="TotalGeneral" t-as="total">
+								<tr style="font-weight: bold;">
+									<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
+									<td class="sat_td_total">Total</td>
+									<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
+									<td class="text-right sat_td_total">
+										<span t-esc="total['debit']"
+											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+									</td>
+									<td class="text-right sat_td_total">
+										<span t-esc="total['credit']"
 											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
 									</td>
 								</tr>
