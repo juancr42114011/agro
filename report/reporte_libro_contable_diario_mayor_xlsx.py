@@ -54,9 +54,9 @@ class ReporteLibroContableDiarioXlsx(models.AbstractModel):
             accounts_res, total_general = self.env['report.agro.report_libro_contable_diario'].with_context(contexto)._get_account_move_entry(journals,accounts)
             sheet.merge_range(self.columns_range('A','L',1,1),'{} : Libro Diario'.format(datas.company_id.name),negritacentro)
             if datas.date_from:
-                sheet.merge_range(self.columns_range('A','B',2,2),'Date from: {}'.format(datas.date_from))
+                sheet.merge_range(self.columns_range('A','B',2,2),'Periodo del: {}'.format(datas.date_from))
             if datas.date_to:
-                sheet.merge_range(self.columns_range('A','B',3,3),'Date to: {}'.format(datas.date_to))
+                sheet.merge_range(self.columns_range('A','B',3,3),'Al: {}'.format(datas.date_to))
             row=5
             for account in accounts_res:
 
@@ -140,9 +140,9 @@ class ReporteLibroContableMayorXlsx(models.AbstractModel):
             accounts_res, total_general = self.env['report.agro.report_libro_contable_mayor'].with_context(contexto)._get_account_move_entry(journals,accounts)
             sheet.merge_range(self.columns_range('A','L',1,1),'{} : Libro Mayor'.format(datas.company_id.name),negritacentro)
             if datas.date_from:
-                sheet.merge_range(self.columns_range('A','B',2,2),'Date from: {}'.format(datas.date_from))
+                sheet.merge_range(self.columns_range('A','B',2,2),'Periodo del: {}'.format(datas.date_from))
             if datas.date_to:
-                sheet.merge_range(self.columns_range('A','B',3,3),'Date to: {}'.format(datas.date_to))
+                sheet.merge_range(self.columns_range('A','B',3,3),'Al: {}'.format(datas.date_to))
             row=5
             for account in accounts_res:
                 for encabezado in account['encabezado']:

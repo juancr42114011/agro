@@ -27,17 +27,15 @@
 			<div class="header">
 				<div class="row">
 					<div class="col-3">
-						<span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+
 					</div>
 					<div class="col-6 text-center">
 						<p class="m-0"><span t-esc="company.name"/></p>
-						<p class="m-0"><span t-esc="company.vat"/></p>
+						<p class="m-0">NIT: <span t-esc="company.vat"/></p>
 					</div>
 					<div class="col-3 text-right">
 						<ul class="list-inline">
-							<li class="list-inline-item"><span class="page"/></li>
-							<li class="list-inline-item">/</li>
-							<li class="list-inline-item"><span class="topage"/></li>
+							<li class="list-inline-item">FOLIO: <![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]></li>
 						</ul>
 					</div>
 				</div>
@@ -68,12 +66,12 @@
 						<div class="row">
 							<div class="col-12">
 								<t t-if="data['date_from']">
-									<strong>Date from :</strong>
+									<strong>Periodo del:</strong>
 									<span t-esc="data['date_from']" t-options='{"widget": "date"}' />
 									<br />
 								</t>
 								<t t-if="data['date_to']">
-									<strong>Date to :</strong>
+									<strong>Al :</strong>
 									<span t-esc="data['date_to']" t-options='{"widget": "date"}' />
 								</t>
 							</div>
@@ -190,12 +188,12 @@ LIBRO DIARIO
 						<div class="row">
 							<div class="col-12">
 								<t t-if="data['date_from']">
-									<strong>Date from :</strong>
+									<strong>Periodo del :</strong>
 									<span t-esc="data['date_from']" t-options='{"widget": "date"}' />
 									<br />
 								</t>
 								<t t-if="data['date_to']">
-									<strong>Date to :</strong>
+									<strong>Al :</strong>
 									<span t-esc="data['date_to']" t-options='{"widget": "date"}' />
 								</t>
 							</div>
