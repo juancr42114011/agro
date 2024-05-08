@@ -109,6 +109,7 @@ class ReporteLibroContableMayorXlsx(models.AbstractModel):
         sheet = workbook.add_worksheet('Libro Mayor')
         negritaizquierda = workbook.add_format({'bold': True,'align':'left','valign':'vcenter','text_wrap':1})
         negritaderecha = workbook.add_format({'bold': True,'align':'right','valign':'vcenter','text_wrap':1})
+        date_format = workbook.add_format({'num_format': 'dd/mm/yyyy','align':'right','valign':'vcenter','text_wrap':1})
         negritacentro = workbook.add_format({'bold': True,'align':'center','valign':'vcenter','text_wrap':1})
         celda_con_borde_alizquierda = workbook.add_format({'bold': True,'align':'left','valign':'vcenter','text_wrap':1,'border':1})
         celda_con_borde_alderecha = workbook.add_format({'bold': True,'align':'right','valign':'vcenter','text_wrap':1,'border':1})
@@ -159,7 +160,7 @@ class ReporteLibroContableMayorXlsx(models.AbstractModel):
                     sheet.merge_range(self.columns_range('K','L',row,row),'Saldo Final',celda_con_borde_alderecha)
                     row+=1
                     for line in account['detalle']:
-                        sheet.merge_range(self.columns_range('A','B',row,row),line['ldate'])
+                        sheet.merge_range(self.columns_range('A','B',row,row),line['ldate'],date_format)
                         sheet.merge_range(self.columns_range('C','F',row,row),line['jname'])
                         sheet.merge_range(self.columns_range('G','H',row,row),line['debit'],cantidades_sin_bordes)
                         sheet.merge_range(self.columns_range('I','J',row,row),line['credit'],cantidades_sin_bordes)
