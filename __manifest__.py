@@ -37,6 +37,7 @@
         'wizard/purchase_order_views_wizard.xml',
         'wizard/libro_contable_view.xml',
         'views/report_libro_diario.xml',
+        'views/sale_order_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

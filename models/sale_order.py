@@ -6,6 +6,8 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 class SaleOrder(models.Model):
     _inherit = "sale.order"
     
+    guia_ganado = fields.Char(string='Guia Ganado', help="Guia especial de despacho de ganado", tracking=True)
+    
     def action_confirm(self):
         for sale in self:
             #Se agrega esta validacion, si la empresa es (Ganadería el Manantial, S. A.), entonces no se
