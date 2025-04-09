@@ -35,7 +35,13 @@
 					</div>
 					<div class="col-3 text-right">
 						<ul class="list-inline">
-							<li class="list-inline-item">FOLIO: <![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]></li>
+							<t t-if="folio">
+								<ul class="list-inline">
+									<li class="list-inline-item">Folio: 
+										<t t-call="agro.counter_folio"></t>
+									</li>
+								</ul>
+							</t>
 						</ul>
 					</div>
 				</div>
@@ -52,8 +58,8 @@
 -->
 		<template id="report_libro_contable_mayor">
 			<t t-call="web.html_container">
-				<t t-set="data_report_margin_top" t-value="12" />
-				<t t-set="data_report_header_spacing" t-value="9" />
+				<t t-set="data_report_margin_top" t-value="20" />
+				<t t-set="data_report_header_spacing" t-value="10" />
 				<t t-set="data_report_dpi" t-value="110" />
 				<!--<t
 				t-call="web.basic_layout">-->
@@ -174,8 +180,8 @@ LIBRO DIARIO
 -->
 		<template id="report_libro_contable_diario">
 			<t t-call="web.html_container">
-				<t t-set="data_report_margin_top" t-value="12" />
-				<t t-set="data_report_header_spacing" t-value="9" />
+				<t t-set="data_report_margin_top" t-value="20" />
+				<t t-set="data_report_header_spacing" t-value="10" />
 				<t t-set="data_report_dpi" t-value="110" />
 				<!--<t
 				t-call="web.basic_layout">-->
@@ -273,6 +279,50 @@ LIBRO DIARIO
 						</table>
 					</div>
 				</t>
+			</t>
+		</template>
+
+		<template id="counter_folio">
+			<span class="current_folio"></span>
+			<span class="page" hidden="true" />
+			<t t-if="folio != 0">
+				<script>
+				var currentNoFolioNumber =
+					<t t-esc="folio - 1 " />
+				;
+				//var temps = document.getElementById('current_folio');
+				
+				var temp = {};
+				
+				var params = document.location.search.substr(1);
+				
+				params = params.split('&amp;');
+				
+				for(var i = 0 ; i &lt; params.length; i++) {
+				  var split_param = params[i].split('=',2);
+				  
+				  if( split_param[0] == 'page'){
+					temp[split_param[0]] = parseInt(unescape(split_param[1])) + currentNoFolioNumber;
+				  } else {
+					temp[split_param[0]] = unescape(split_param[1]);
+				  }
+				}
+				
+				
+				var elements = document.getElementsByClassName("current_folio");
+				for( var i = 0 ; i &lt; elements.length; i++) {
+				elements[i].innerText = temp['page'];
+				}
+				//var classes = ["frompage", "topage", "page", "webpage", "section", "subsection", "subsubsection"];
+				/*for( var i = 0 ; i &lt; classes.length; i++) {
+				  var elements = document.getElementsByClassName(classes[i]);
+				  
+				  //for(var j = 0; j &lt; elements.length; j++) {
+					//temps.innerText = temp[classes[i]];
+					//elements[j].textContent = temp[classes[i]];
+				  //}
+				}*/
+				</script>
 			</t>
 		</template>
 

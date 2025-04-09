@@ -150,7 +150,7 @@ class ReportLibroContable(models.AbstractModel):
         fecha_reporte_anio = fecha_reporte.year
         fecha_reporte_mes = fecha_reporte.month
         
-
+        folio = int(data['form']['folio'])
 
         return {
             'doc_ids': docids,
@@ -163,6 +163,7 @@ class ReportLibroContable(models.AbstractModel):
             'Accounts': accounts_res,
             'TotalGeneral': total_general,
             'print_journal': codes,
+            'folio': folio,
         }
 
 class ReportLibroContableMayor(models.AbstractModel):
@@ -189,7 +190,7 @@ class ReportLibroContableMayor(models.AbstractModel):
             init_wheres.append(init_where_clause.strip())
         init_filters = " AND ".join(init_wheres)
         filters = init_filters.replace('account_move_line__move_id', 'm').replace('account_move_line','l')
-        sql = ("""SELECT 0 AS lid, l.account_id AS account_id, '' AS ldate, '' AS lcode, NULL AS amount_currency, '' AS lref, 'Initial Balance' AS jname, COALESCE(SUM(l.debit),0.0) AS debit, COALESCE(SUM(l.credit),0.0) AS credit, COALESCE(SUM(l.debit),0) - COALESCE(SUM(l.credit), 0) as balance, '' AS lpartner_id,\
+        sql = ("""SELECT 0 AS lid, l.account_id AS account_id, '' AS ldate, '' AS lcode, NULL AS amount_currency, '' AS lref, 'Saldo Inicial' AS jname, COALESCE(SUM(l.debit),0.0) AS debit, COALESCE(SUM(l.credit),0.0) AS credit, COALESCE(SUM(l.debit),0) - COALESCE(SUM(l.credit), 0) as balance, '' AS lpartner_id,\
             '' AS move_name, '' AS mmove_id, '' AS currency_code,\
             NULL AS currency_id,\
             '' AS invoice_id, '' AS invoice_type, '' AS invoice_number,\
@@ -343,6 +344,8 @@ class ReportLibroContableMayor(models.AbstractModel):
         fecha_reporte = datetime.strptime(data['form'].get('date_from'), '%Y-%m-%d')
         fecha_reporte_anio = fecha_reporte.year
         fecha_reporte_mes = fecha_reporte.month
+        
+        folio = int(data['form']['folio'])
 
         return {
             'doc_ids': docids,
@@ -355,4 +358,5 @@ class ReportLibroContableMayor(models.AbstractModel):
             'Accounts': accounts_res,
             'TotalGeneral': total_general,
             'print_journal': codes,
+            'folio': folio,
         }
