@@ -164,6 +164,7 @@ class ReportLibroContable(models.AbstractModel):
             'TotalGeneral': total_general,
             'print_journal': codes,
             'folio': folio,
+            'titulo': "Libro Diario"
         }
 
 class ReportLibroContableMayor(models.AbstractModel):
@@ -359,4 +360,5 @@ class ReportLibroContableMayor(models.AbstractModel):
             'TotalGeneral': total_general,
             'print_journal': codes,
             'folio': folio,
+            'titulo': "Libro Mayor",
         }

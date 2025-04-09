@@ -10,7 +10,7 @@
 
 		<template id="internal_layout">
 			<t t-if="not o" t-set="o" t-value="doc"/>
-	
+
 			<t t-if="not company">
 				<!-- Multicompany -->
 				<t t-if="company_id">
@@ -23,15 +23,18 @@
 					<t t-set="company" t-value="res_company"/>
 				</t>
 			</t>
-	
+
 			<div class="header">
 				<div class="row">
 					<div class="col-3">
 
 					</div>
 					<div class="col-6 text-center">
-						<p class="m-0"><span t-esc="company.name"/></p>
-						<p class="m-0">NIT: <span t-esc="company.vat"/></p>
+						<p class="m-0">
+							<span t-esc="company.name"/>
+						</p>
+						<p class="m-0">NIT: <span t-esc="company.vat"/>
+						</p>
 					</div>
 					<div class="col-3 text-right">
 						<ul class="list-inline">
@@ -45,250 +48,221 @@
 						</ul>
 					</div>
 				</div>
-			</div>
-			<div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
-			  <t t-out="0"/>
-			</div>
-		</template>
+				<p><![CDATA[&nbsp;]]></p>
+				<h2><span t-esc="titulo"/> del mes de  <span t-esc="mes"/>
+				<span t-esc="anio"/>
+			</h2>
 
-		<!--
+			<div class="row">
+				<div class="col-12">
+					<t t-if="data['date_from']">
+						<strong>Periodo del :</strong>
+						<span t-esc="data['date_from']" t-options='{"widget": "date"}' />
+					</t>
+					<t t-if="data['date_to']">
+						<strong>Al :</strong>
+						<span t-esc="data['date_to']" t-options='{"widget": "date"}' />
+					</t>
+				</div>
+			</div>
+		</div>
+		<div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+			<t t-out="0"/>
+		</div>
+	</template>
+
+	<!--
 
 		 LIBRO MAYOR
 
 -->
-		<template id="report_libro_contable_mayor">
-			<t t-call="web.html_container">
-				<t t-set="data_report_margin_top" t-value="20" />
-				<t t-set="data_report_header_spacing" t-value="10" />
-				<t t-set="data_report_dpi" t-value="110" />
-				<!--<t
-				t-call="web.basic_layout">-->
-				<t t-call="agro.internal_layout">
-					
-					<div class="page">
-						<p><![CDATA[&nbsp;]]></p>
-						<h2>Libro Mayor del mes de <span t-esc="mes"/> <span t-esc="anio"/></h2>
-					
-						<div class="row">
-							<div class="col-12">
-								<t t-if="data['date_from']">
-									<strong>Periodo del:</strong>
-									<span t-esc="data['date_from']" t-options='{"widget": "date"}' />
-									<br />
-								</t>
-								<t t-if="data['date_to']">
-									<strong>Al :</strong>
-									<span t-esc="data['date_to']" t-options='{"widget": "date"}' />
-								</t>
-							</div>
-						</div>
-						<table class="table-condensed sat_table">
-							<t t-foreach="Accounts" t-as="account">
-								<t t-foreach="account['encabezado']" t-as="encabezado">
-									<tr style="font-weight: bold;">
-										<td colspan="2">
-											<span t-esc="encabezado['acode']" />
-										</td>
-										<td>
-											<span t-esc="encabezado['aname']" />
-										</td>
-										<td class="text-right"><![CDATA[&nbsp;]]></td>
-										<td class="text-right"><![CDATA[&nbsp;]]></td>
-										<td class="text-right"><![CDATA[&nbsp;]]></td>
-									</tr>
-								</t>
-								<tr style="font-weight: bold;">
-									<td class="sat_td">Fecha</td>
-									<td class="sat_td" colspan="2">Diario</td>
-									<td class="text-right sat_td">Debe</td>
-									<td class="text-right sat_td">Haber</td>
-									<td class="text-right sat_td">Saldo Final</td>
-								</tr>
-								<tr t-foreach="account['detalle']" t-as="line">
-									<td>
-										<span t-esc="line['ldate']" t-options='{"widget": "date"}' />
-									</td>
-									<td colspan="2">
-										<span t-esc="line['jname']" />
-									</td>
-									<td class="text-right">
-										<span t-esc="line['debit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-									<td class="text-right">
-										<span t-esc="line['credit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-									<td class="text-right">
-										<span t-esc="line['balance']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-								</tr>
-								<t t-foreach="account['encabezado']" t-as="encabezado">
-									<tr style="font-weight: bold;">
-										<td class="sat_td_stotal"><![CDATA[&nbsp;]]></td>
-										<td class="sat_td_stotal" colspan="2">Sub Total</td>
-										<!--<td
-										class="sat_td_stotal"><![CDATA[&nbsp;]]></td>-->
-										<td class="text-right sat_td_stotal">
-											<span t-esc="encabezado['debit']"
-												t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-										</td>
-										<td class="text-right sat_td_stotal">
-											<span t-esc="encabezado['credit']"
-												t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-										</td>
-										<td class="text-right sat_td_stotal">
-											<span t-esc="encabezado['balance']"
-												t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-										</td>
-									</tr>
-								</t>
-								<tr>
-									<td colspan="6"><![CDATA[&nbsp;]]></td>
-								</tr>
-							</t>
-							<t t-foreach="TotalGeneral" t-as="total">
-								<tr style="font-weight: bold;">
-									<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
-									<td class="sat_td_total">Total</td>
-									<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
-									<td class="text-right sat_td_total">
-										<span t-esc="total['debit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-									<td class="text-right sat_td_total">
-										<span t-esc="total['credit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-									<td class="text-right sat_td_total">
-										<span t-esc="total['balance']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-								</tr>
-							</t>
-						</table>
-					</div>
-				</t>
-			</t>
-		</template>
+	<template id="report_libro_contable_mayor">
+		<t t-call="web.html_container">
+			<t t-set="data_report_margin_top" t-value="50" />
+			<t t-set="data_report_header_spacing" t-value="40" />
+			<t t-set="data_report_dpi" t-value="110" />
+			<!--<t t-call="web.basic_layout">-->
+			<t t-call="agro.internal_layout">
 
-		<!--
+			<div class="page">
+			
+
+
+				<table class="table-condensed sat_table">
+					<t t-foreach="Accounts" t-as="account">
+						<t t-foreach="account['encabezado']" t-as="encabezado">
+							<tr style="font-weight: bold;">
+								<td colspan="2">
+									<span t-esc="encabezado['acode']" />
+								</td>
+								<td>
+									<span t-esc="encabezado['aname']" />
+								</td>
+								<td class="text-right"><![CDATA[&nbsp;]]></td>
+								<td class="text-right"><![CDATA[&nbsp;]]></td>
+								<td class="text-right"><![CDATA[&nbsp;]]></td>
+							</tr>
+						</t>
+						<tr style="font-weight: bold;">
+							<td class="sat_td">Fecha</td>
+							<td class="sat_td" colspan="2">Diario</td>
+							<td class="text-right sat_td">Debe</td>
+							<td class="text-right sat_td">Haber</td>
+							<td class="text-right sat_td">Saldo Final</td>
+						</tr>
+						<tr t-foreach="account['detalle']" t-as="line">
+							<td>
+								<span t-esc="line['ldate']" t-options='{"widget": "date"}' />
+							</td>
+							<td colspan="2">
+								<span t-esc="line['jname']" />
+							</td>
+							<td class="text-right">
+								<span t-esc="line['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+							<td class="text-right">
+								<span t-esc="line['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+							<td class="text-right">
+								<span t-esc="line['balance']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+						</tr>
+						<t t-foreach="account['encabezado']" t-as="encabezado">
+							<tr style="font-weight: bold;">
+								<td class="sat_td_stotal"><![CDATA[&nbsp;]]></td>
+								<td class="sat_td_stotal" colspan="2">Sub Total</td>
+								<!--<td
+										class="sat_td_stotal"><![CDATA[&nbsp;]]></td>-->
+								<td class="text-right sat_td_stotal">
+									<span t-esc="encabezado['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+								</td>
+								<td class="text-right sat_td_stotal">
+									<span t-esc="encabezado['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+								</td>
+								<td class="text-right sat_td_stotal">
+									<span t-esc="encabezado['balance']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+								</td>
+							</tr>
+						</t>
+						<tr>
+							<td colspan="6"><![CDATA[&nbsp;]]></td>
+						</tr>
+					</t>
+					<t t-foreach="TotalGeneral" t-as="total">
+						<tr style="font-weight: bold;">
+							<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
+							<td class="sat_td_total">Total</td>
+							<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
+							<td class="text-right sat_td_total">
+								<span t-esc="total['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+							<td class="text-right sat_td_total">
+								<span t-esc="total['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+							<td class="text-right sat_td_total">
+								<span t-esc="total['balance']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+						</tr>
+					</t>
+				</table>
+			</div>
+		</t>
+	</t>
+</template>
+
+<!--
 
 LIBRO DIARIO
 
 -->
-		<template id="report_libro_contable_diario">
-			<t t-call="web.html_container">
-				<t t-set="data_report_margin_top" t-value="20" />
-				<t t-set="data_report_header_spacing" t-value="10" />
-				<t t-set="data_report_dpi" t-value="110" />
-				<!--<t
-				t-call="web.basic_layout">-->
-				<t t-call="agro.internal_layout">
-					
-					<div class="page">
-						<p><![CDATA[&nbsp;]]></p>
-						<h2>Libro Diario del mes de  <span t-esc="mes"/> <span t-esc="anio"/></h2>
-					
-						<div class="row">
-							<div class="col-12">
-								<t t-if="data['date_from']">
-									<strong>Periodo del :</strong>
-									<span t-esc="data['date_from']" t-options='{"widget": "date"}' />
-									<br />
-								</t>
-								<t t-if="data['date_to']">
-									<strong>Al :</strong>
-									<span t-esc="data['date_to']" t-options='{"widget": "date"}' />
-								</t>
-							</div>
-						</div>
-						<table class="table-condensed sat_table">
-							<t t-foreach="Accounts" t-as="account">
-								<t t-set="encabezado" t-value="account['encabezado']" />
-								<tr style="font-weight: bold;">
-									<td colspan="2">
-										<span t-esc="encabezado['ldate']" t-options='{"widget": "date"}'/>
-									</td>
-									<td>
-										<span t-esc="encabezado['journalname']" />
-									</td>
-									<td class="text-right">
-										<span />
-									</td>
-									<td>
-										<span />
-									</td>
-								</tr>
-								<tr style="font-weight: bold;">
-									<td class="sat_td">Fecha</td>
-									<td class="sat_td">Codigo</td>
-									<td class="sat_td">Nombre</td>
-									<td class="text-right sat_td">Debe</td>
-									<td class="text-right sat_td">Haber</td>
-								</tr>
-								<tr t-foreach="account['detalle']" t-as="line">
-									<td>
-										<span t-esc="line['ldate']" t-options='{"widget": "date"}' />
-									</td>
-									<td>
-										<span t-esc="line['acode']" />
-									</td>
-									<td>
-										<span t-esc="line['aname']" />
-									</td>
-									<td class="text-right">
-										<span t-esc="line['debit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-									<td class="text-right">
-										<span t-esc="line['credit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-								</tr>
-								<tr style="font-weight: bold;">
-									<td class="sat_td_stotal"><![CDATA[&nbsp;]]></td>
-									<td class="sat_td_stotal">Sub Total</td>
-									<td class="sat_td_stotal"><![CDATA[&nbsp;]]></td>
-									<td class="text-right sat_td_stotal">
-										<span t-esc="encabezado['debit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-									<td class="text-right sat_td_stotal">
-										<span t-esc="encabezado['credit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-								</tr>
-							</t>
-							<t t-foreach="TotalGeneral" t-as="total">
-								<tr style="font-weight: bold;">
-									<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
-									<td class="sat_td_total">Total</td>
-									<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
-									<td class="text-right sat_td_total">
-										<span t-esc="total['debit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-									<td class="text-right sat_td_total">
-										<span t-esc="total['credit']"
-											t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
-									</td>
-								</tr>
-							</t>
-						</table>
-					</div>
-				</t>
-			</t>
-		</template>
+<template id="report_libro_contable_diario">
+	<t t-call="web.html_container">
+		<t t-set="data_report_margin_top" t-value="50" />
+		<t t-set="data_report_header_spacing" t-value="40" />
+		<t t-set="data_report_dpi" t-value="110" />
+		<!--<t t-call="web.basic_layout">-->
+		<t t-call="agro.internal_layout">
 
-		<template id="counter_folio">
-			<span class="current_folio"></span>
-			<span class="page" hidden="true" />
-			<t t-if="folio != 0">
-				<script>
+			<div class="page">
+				<table class="table-condensed sat_table">
+					<t t-foreach="Accounts" t-as="account">
+						<t t-set="encabezado" t-value="account['encabezado']" />
+						<tr style="font-weight: bold;">
+							<td colspan="2">
+								<span t-esc="encabezado['ldate']" t-options='{"widget": "date"}'/>
+							</td>
+							<td>
+								<span t-esc="encabezado['journalname']" />
+							</td>
+							<td class="text-right">
+								<span />
+							</td>
+							<td>
+								<span />
+							</td>
+						</tr>
+						<tr style="font-weight: bold;">
+							<td class="sat_td">Fecha</td>
+							<td class="sat_td">Codigo</td>
+							<td class="sat_td">Nombre</td>
+							<td class="text-right sat_td">Debe</td>
+							<td class="text-right sat_td">Haber</td>
+						</tr>
+						<tr t-foreach="account['detalle']" t-as="line">
+							<td>
+								<span t-esc="line['ldate']" t-options='{"widget": "date"}' />
+							</td>
+							<td>
+								<span t-esc="line['acode']" />
+							</td>
+							<td>
+								<span t-esc="line['aname']" />
+							</td>
+							<td class="text-right">
+								<span t-esc="line['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+							<td class="text-right">
+								<span t-esc="line['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+						</tr>
+						<tr style="font-weight: bold;">
+							<td class="sat_td_stotal"><![CDATA[&nbsp;]]></td>
+							<td class="sat_td_stotal">Sub Total</td>
+							<td class="sat_td_stotal"><![CDATA[&nbsp;]]></td>
+							<td class="text-right sat_td_stotal">
+								<span t-esc="encabezado['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+							<td class="text-right sat_td_stotal">
+								<span t-esc="encabezado['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+						</tr>
+					</t>
+					<t t-foreach="TotalGeneral" t-as="total">
+						<tr style="font-weight: bold;">
+							<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
+							<td class="sat_td_total">Total</td>
+							<td class="sat_td_total"><![CDATA[&nbsp;]]></td>
+							<td class="text-right sat_td_total">
+								<span t-esc="total['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+							<td class="text-right sat_td_total">
+								<span t-esc="total['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}" />
+							</td>
+						</tr>
+					</t>
+				</table>
+			</div>
+		</t>
+	</t>
+</template>
+
+<template id="counter_folio">
+	<span class="current_folio"></span>
+	<span class="page" hidden="true" />
+	<t t-if="folio != 0">
+		<script>
 				var currentNoFolioNumber =
-					<t t-esc="folio - 1 " />
+			<t t-esc="folio - 1 " />
 				;
 				//var temps = document.getElementById('current_folio');
 				
@@ -322,29 +296,29 @@ LIBRO DIARIO
 					//elements[j].textContent = temp[classes[i]];
 				  //}
 				}*/
-				</script>
-			</t>
-		</template>
+		</script>
+	</t>
+</template>
 
-		<record id="action_report_agro_diario" model="ir.actions.report">
-			<field name="name">Libro Diario</field>
-			<field name="model">libro_contable.report</field>
-			<field name="report_type">qweb-pdf</field>
-			<field name="report_name">agro.report_libro_contable_diario</field>
-			<field name="report_file">agro.report_libro_contable_diario</field>
-			<field name="paperformat_id" ref="base.paperformat_us" />
-			<field name="binding_type">report</field>
-		</record>
+<record id="action_report_agro_diario" model="ir.actions.report">
+	<field name="name">Libro Diario</field>
+	<field name="model">libro_contable.report</field>
+	<field name="report_type">qweb-pdf</field>
+	<field name="report_name">agro.report_libro_contable_diario</field>
+	<field name="report_file">agro.report_libro_contable_diario</field>
+	<field name="paperformat_id" ref="base.paperformat_us" />
+	<field name="binding_type">report</field>
+</record>
 
-    <record id="action_report_agro_libro_mayor" model="ir.actions.report">
-			<field name="name">Libro Mayor</field>
-			<field name="model">libro_contable.report</field>
-			<field name="report_type">qweb-pdf</field>
-			<field name="report_name">agro.report_libro_contable_mayor</field>
-			<field name="report_file">agro.report_libro_contable_mayor</field>
-			<field name="paperformat_id" ref="base.paperformat_us" />
-			<field name="binding_type">report</field>
-		</record>
+<record id="action_report_agro_libro_mayor" model="ir.actions.report">
+	<field name="name">Libro Mayor</field>
+	<field name="model">libro_contable.report</field>
+	<field name="report_type">qweb-pdf</field>
+	<field name="report_name">agro.report_libro_contable_mayor</field>
+	<field name="report_file">agro.report_libro_contable_mayor</field>
+	<field name="paperformat_id" ref="base.paperformat_us" />
+	<field name="binding_type">report</field>
+</record>
 
-	</data>
+</data>
 </odoo>
