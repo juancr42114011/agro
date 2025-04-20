@@ -8,7 +8,7 @@ from odoo import api, models, _
 import sys
 from odoo.tools.misc import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
-from datetime import datetime
+from datetime import datetime, timedelta
 
 MESES = {
             1:'Enero',
@@ -186,11 +186,52 @@ class ReportLibroContableMayor(models.AbstractModel):
         #Comienzo a buscar los saldos iniciales de las cuentas
         init_tables, init_where_clause, init_where_params = MoveLine.with_context(company_id=self.env.context.get('company_id'), date_from=self.env.context.get('date_from'), date_to=False, initial_bal=True)._query_get()
         init_wheres = [""]
+        dia_anterior = self.env.context.get('date_from')
+        # Obtener la fecha desde el contexto
+        fecha_str = self.env.context.get('date_from')
+
+        # Convertir a objeto datetime
+        fecha_obj = datetime.strptime(fecha_str, '%Y-%m-%d')
+
+        # Restar un día
+        dia_anterior = fecha_obj - timedelta(days=1)
+
+        # Si necesitas la fecha como string nuevamente
+        dia_anterior_str = dia_anterior.strftime('%Y-%m-%d')
+        date_to = self.env.context.get('date_to')
+
+
+        # Convertir a objeto datetime
+        date_obj = datetime.strptime(date_to, '%Y-%m-%d')
+
+        # Obtener el primer día del año
+        primer_dia_anio = date_obj.replace(month=1, day=1)
+
+        # Si necesitas la fecha como string
+        primer_dia_anio_str = primer_dia_anio.strftime('%Y-%m-%d')
 
         if init_where_clause.strip():
             init_wheres.append(init_where_clause.strip())
         init_filters = " AND ".join(init_wheres)
         filters = init_filters.replace('account_move_line__move_id', 'm').replace('account_move_line','l')
+        print("--------------------------- Inicio")
+        print(filters)
+        filters += """
+        AND (((((
+		("l"."display_type" not in ('line_section', 'line_note')) 
+		OR "l"."display_type" IS NULL) 
+	AND (("l"."parent_state" != 'cancel') OR "l"."parent_state" IS NULL)) 
+	AND ("l"."company_id" in (1))) 
+	AND ("l"."date" <= %s)) 
+ 
+        AND (("l"."date" >= %s) OR ("l"."account_id" in (
+		SELECT "account_account".id FROM "account_account" 
+		WHERE ("account_account"."user_type_id" in (
+			SELECT "account_account_type".id FROM "account_account_type" 
+			WHERE ("account_account_type"."include_initial_balance" = %s))) 
+	    AND ("account_account"."company_id" IS NULL  OR ("account_account"."company_id" in (%s)))))))
+        """
+        print("--------------------------- Fin")
         sql = ("""SELECT 0 AS lid, l.account_id AS account_id, '' AS ldate, '' AS lcode, NULL AS amount_currency, '' AS lref, 'Saldo Inicial' AS jname, COALESCE(SUM(l.debit),0.0) AS debit, COALESCE(SUM(l.credit),0.0) AS credit, COALESCE(SUM(l.debit),0) - COALESCE(SUM(l.credit), 0) as balance, '' AS lpartner_id,\
             '' AS move_name, '' AS mmove_id, '' AS currency_code,\
             NULL AS currency_id,\
@@ -203,6 +244,12 @@ class ReportLibroContableMayor(models.AbstractModel):
             JOIN account_journal j ON (l.journal_id=j.id)\
             WHERE l.account_id IN %s""" + filters + """ GROUP BY l.account_id ORDER by l.account_id""")
         params = (tuple(accounts.ids),) + tuple(init_where_params)
+        print("====sql")
+        print(sql)
+        print("====params")
+        params += (dia_anterior_str, primer_dia_anio_str,True,params[3])
+        print(params)
+        
         cr.execute(sql, params)
         for row in cr.dictfetchall():
             #move_lines[row.pop('account_id')].append(row)
