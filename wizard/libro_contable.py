@@ -74,17 +74,19 @@ class LibroContableReport(models.TransientModel):
     def export_xls(self):
         self.ensure_one()
         context = self._context
-        datas = {'ids': context.get('active_ids', [])}
-        datas['model'] = self.env.context.get('active_model', 'ir.ui.menu')
-        datas['form'] = self.read(['company_id','date_from', 'date_to', 'journal_ids', 'target_move','libro'])[0]
-        used_context = self._build_contexts(datas)
-        datas['form']['used_context'] = dict(used_context, lang=self.env.context.get('lang') or 'en_US')
+        data = {}
+        data['ids'] = self.env.context.get('active_ids', [])
+        data['model'] = self.env.context.get('active_model', 'ir.ui.menu')
+        data['form'] = self.read(['company_id','date_from', 'date_to', 'journal_ids', 'target_move','libro','folio'])[0]
+        used_context = self._build_contexts(data)
+        data['form']['used_context'] = dict(used_context, lang=self.env.context.get('lang') or 'en_US')
         f = io.BytesIO()
         workbook = xlsxwriter.Workbook(f)
         if self.libro == 'diario':
-            self.env['report.agro.libro_contable_diario_xlsx'].generate_xlsx_report(workbook,datas, data_report=[])            
+            self.env['report.agro.libro_contable_diario_xlsx'].generate_xlsx_report(workbook, data, data_report=[])            
         else:
-            self.env['report.agro.libro_contable_mayor_xlsx'].generate_xlsx_report(workbook,datas, data_report=[])
+            print(data['form'])
+            self.env['report.agro.libro_contable_mayor_xlsx'].generate_xlsx_report(workbook, data, data_report=[])
 
         workbook.close()
         datos = base64.b64encode(f.getvalue())

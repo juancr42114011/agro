@@ -221,7 +221,7 @@ class ReportLibroContableMayor(models.AbstractModel):
 		("l"."display_type" not in ('line_section', 'line_note')) 
 		OR "l"."display_type" IS NULL) 
 	AND (("l"."parent_state" != 'cancel') OR "l"."parent_state" IS NULL)) 
-	AND ("l"."company_id" in (1))) 
+	AND ("l"."company_id" in (%s))) 
 	AND ("l"."date" <= %s)) 
  
         AND (("l"."date" >= %s) OR ("l"."account_id" in (
@@ -247,7 +247,7 @@ class ReportLibroContableMayor(models.AbstractModel):
         print("====sql")
         print(sql)
         print("====params")
-        params += (dia_anterior_str, primer_dia_anio_str,True,params[3])
+        params += (self.env.context.get('company_id'), dia_anterior_str, primer_dia_anio_str,True,params[3])
         print(params)
         
         cr.execute(sql, params)

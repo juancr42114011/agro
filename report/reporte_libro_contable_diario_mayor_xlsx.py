@@ -135,9 +135,10 @@ class ReporteLibroContableMayorXlsx(models.AbstractModel):
                         ,'state':datas.target_move
                         ,'libro':datas.libro
                         ,'company_id':datas.company_id.id
-                        ,'date_from':datas.date_from
-                        ,'date_to':datas.date_to
+                        ,'date_from': datas.date_from.strftime('%Y-%m-%d')
+                        ,'date_to': datas.date_to.strftime('%Y-%m-%d')
             }
+            print(contexto)
             accounts_res, total_general = self.env['report.agro.report_libro_contable_mayor'].with_context(contexto)._get_account_move_entry(journals,accounts)
             sheet.merge_range(self.columns_range('A','L',1,1),'{} : Libro Mayor'.format(datas.company_id.name),negritacentro)
             if datas.date_from:
