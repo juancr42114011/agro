@@ -32,6 +32,7 @@
         'data/product_template_data.xml',
         'data/account_journal_data.xml',
         'data/ir_sequence_data.xml',
+        'data/res_users_data.xml',
         'views/proyeccion_venta_views.xml',
         'report/sale_report.xml',
         'wizard/purchase_order_views_wizard.xml',
