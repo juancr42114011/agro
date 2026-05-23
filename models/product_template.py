@@ -13,6 +13,12 @@ class ProductTemplate(models.Model):
         'Cantidad de Compra Minima', default=0,
         help="Cantidad de Compra Minima")
     a_presupuestar = fields.Boolean(default=True, help="Bandera que nos indica si se incluye en el presupuesto.")
+    codigo_referencia = fields.Char(
+        string='Código de Referencia',
+        index=True,
+        copy=False,
+        help='Código de referencia interno del producto (columna Código del Kardex)',
+    )
     
 
 class ProductCategory(models.Model):

@@ -28,6 +28,11 @@
                         </group>
                     </group>
                 </xpath>
+                <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="codigo_referencia"
+                       string="Código de Referencia"
+                       placeholder="Código del Kardex"/>
+            </xpath>
             </field>
         </record>
 

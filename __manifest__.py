@@ -10,8 +10,8 @@
         Long description of module's purpose
     """,
 
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
+    'author': "Idigua",
+    'website': "http://www.idigua.com.gt",
     'license': "LGPL-3",
 
     # Categories can be used to filter modules in modules listing
@@ -33,6 +33,8 @@
         'data/account_journal_data.xml',
         'data/ir_sequence_data.xml',
         'data/res_users_data.xml',
+        'data/ir_filters_data.xml',
+        'wizard/catalogo_excel_wizard_view.xml',
         'views/proyeccion_venta_views.xml',
         'report/sale_report.xml',
         'wizard/purchase_order_views_wizard.xml',

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="filter_app_autor_idigua" model="ir.filters">
+            <field name="name">Autor Idigua</field>
+            <field name="model_id">ir.module.module</field>
+            <field name="domain">[("author", "ilike", "Idigua")]</field>
+            <field name="user_id" eval="False"/>
+            <field name="context">{'group_by': []}</field>
+            <field name="is_default" eval="True"/>
+        </record>
+    </data>
+</odoo>

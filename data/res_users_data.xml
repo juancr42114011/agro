@@ -12,145 +12,146 @@
     <!-- =====================================================================
          ÁREA DE ADMINISTRACIÓN
     ====================================================================== -->
+    <data noupdate="1">
 
-    <record id="user_silvia_siguan" model="res.users">
-        <field name="name">Silvia Lorena Siguan Aguilar</field>
-        <field name="login">silvia@imporgesa.com</field>
-        <field name="email">silvia@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Encargada de Tienda TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_silvia_siguan" model="res.users">
+            <field name="name">Silvia Lorena Siguan Aguilar</field>
+            <field name="login">silvia@imporgesa.com</field>
+            <field name="email">silvia@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Encargada de Tienda TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <record id="user_melvin_pena" model="res.users">
-        <field name="name">Melvin Daniel Peña Acuta</field>
-        <field name="login">melvin@imporgesa.com</field>
-        <field name="email">melvin@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Encargado del Taller de Servicio Autorizado TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_melvin_pena" model="res.users">
+            <field name="name">Melvin Daniel Peña Acuta</field>
+            <field name="login">melvin@imporgesa.com</field>
+            <field name="email">melvin@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Encargado del Taller de Servicio Autorizado TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <record id="user_jaqueline_monroy" model="res.users">
-        <field name="name">Jaqueline Guadalupe Monroy Rodriguez</field>
-        <field name="login">jaqueline@imporgesa.com</field>
-        <field name="email">jaqueline@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Auxiliar Contable TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_jaqueline_monroy" model="res.users">
+            <field name="name">Jaqueline Guadalupe Monroy Rodriguez</field>
+            <field name="login">jaqueline@imporgesa.com</field>
+            <field name="email">jaqueline@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Auxiliar Contable TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <!-- =====================================================================
-         ÁREA DE OPERACIONES Y LOGÍSTICA
-    ====================================================================== -->
+        <!-- =====================================================================
+            ÁREA DE OPERACIONES Y LOGÍSTICA
+        ====================================================================== -->
 
-    <record id="user_mariajose_gutierrez" model="res.users">
-        <field name="name">Maria Jose Gutierrez Aristondo</field>
-        <field name="login">maria@imporgesa.com</field>
-        <field name="email">maria@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Encargada de Compras/Importaciones TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_mariajose_gutierrez" model="res.users">
+            <field name="name">Maria Jose Gutierrez Aristondo</field>
+            <field name="login">maria@imporgesa.com</field>
+            <field name="email">maria@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Encargada de Compras/Importaciones TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <record id="user_esdras_piril" model="res.users">
-        <field name="name">Esdras Isidro Joel Piril Chavez</field>
-        <field name="login">esdras@imporgesa.com</field>
-        <field name="email">esdras@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Encargado de Bodega TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_esdras_piril" model="res.users">
+            <field name="name">Esdras Isidro Joel Piril Chavez</field>
+            <field name="login">esdras@imporgesa.com</field>
+            <field name="email">esdras@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Encargado de Bodega TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <!-- =====================================================================
-         ÁREA DE VENTAS (JEFE, RUTAS Y SALA)
-    ====================================================================== -->
+        <!-- =====================================================================
+            ÁREA DE VENTAS (JEFE, RUTAS Y SALA)
+        ====================================================================== -->
 
-    <record id="user_adelso_hernandez" model="res.users">
-        <field name="name">Adelso Roderico Hernandez Villavicencio</field>
-        <field name="login">adelso@imporgesa.com</field>
-        <field name="email">adelso@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Ventas Ruta 1 TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_adelso_hernandez" model="res.users">
+            <field name="name">Adelso Roderico Hernandez Villavicencio</field>
+            <field name="login">adelso@imporgesa.com</field>
+            <field name="email">adelso@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Ventas Ruta 1 TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <record id="user_rodwalt_diaz" model="res.users">
-        <field name="name">Rodwalt Gabriel Diaz Hernandez</field>
-        <field name="login">rodwalt@imporgesa.com</field>
-        <field name="email">rodwalt@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Ventas Ruta 2 TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_rodwalt_diaz" model="res.users">
+            <field name="name">Rodwalt Gabriel Diaz Hernandez</field>
+            <field name="login">rodwalt@imporgesa.com</field>
+            <field name="email">rodwalt@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Ventas Ruta 2 TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <record id="user_rocael_hernandez" model="res.users">
-        <field name="name">Rocael Hernandez Revolorio</field>
-        <field name="login">rocael@imporgesa.com</field>
-        <field name="email">rocael@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Ventas Ruta 3 TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_rocael_hernandez" model="res.users">
+            <field name="name">Rocael Hernandez Revolorio</field>
+            <field name="login">rocael@imporgesa.com</field>
+            <field name="email">rocael@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Ventas Ruta 3 TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <record id="user_jose_vargas" model="res.users">
-        <field name="name">Jose Joaquin Vargas Rosales</field>
-        <field name="login">jose@imporgesa.com</field>
-        <field name="email">jose@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Ventas Sala 1 TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_jose_vargas" model="res.users">
+            <field name="name">Jose Joaquin Vargas Rosales</field>
+            <field name="login">jose@imporgesa.com</field>
+            <field name="email">jose@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Ventas Sala 1 TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <record id="user_anllela_pena" model="res.users">
-        <field name="name">Anllela Priscila Peña Acuta</field>
-        <field name="login">anllela@imporgesa.com</field>
-        <field name="email">anllela@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Ventas Sala 2 TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
+        <record id="user_anllela_pena" model="res.users">
+            <field name="name">Anllela Priscila Peña Acuta</field>
+            <field name="login">anllela@imporgesa.com</field>
+            <field name="email">anllela@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Ventas Sala 2 TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
 
-    <record id="user_juan_bobadilla" model="res.users">
-        <field name="name">Juan Manuel Bobadilla Lopez</field>
-        <field name="login">juan@imporgesa.com</field>
-        <field name="email">juan@imporgesa.com</field>
-        <field name="password">12345</field>
-        <field name="function">Ventas Sala 3 TAITZ</field>
-        <field name="groups_id" eval="[
-            (4, ref('base.group_user')),
-            (4, ref('sales_team.group_sale_salesman'))
-        ]"/>
-    </record>
-
+        <record id="user_juan_bobadilla" model="res.users">
+            <field name="name">Juan Manuel Bobadilla Lopez</field>
+            <field name="login">juan@imporgesa.com</field>
+            <field name="email">juan@imporgesa.com</field>
+            <field name="password">12345</field>
+            <field name="function">Ventas Sala 3 TAITZ</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman'))
+            ]"/>
+        </record>
+    </data>
 </odoo>
