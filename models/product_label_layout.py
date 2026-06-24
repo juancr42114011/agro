@@ -88,21 +88,29 @@ class ProductLabelLayout(models.TransientModel):
             #Sirve cuando se imprime desde la opcion de Productos 
             if self.product_tmpl_ids:
                 for i in range(self.custom_quantity):
-                    if self.product_tmpl_ids.default_code not in dicc_products:
-                        dicc_products[self.product_tmpl_ids.default_code]=[]
+                    print("--------------1------------------")
+                    print(dicc_products)
+                    print("--------------2------------------")
+                    print(self.product_tmpl_ids)
+                    for producto_plantilla in self.product_tmpl_ids:
+                        print("--------------3------------------")
+                        
 
-                    if self.product_tmpl_ids.default_code in dicc_products:
-                        dicc_products[self.product_tmpl_ids.default_code].append({
-                        'codigo':self.product_tmpl_ids.default_code,
-                        'descripcion': self.product_tmpl_ids.name,
-                        'codigo_barras': self.product_tmpl_ids.barcode,
-                        'uom': self.product_tmpl_ids.uom_id.name,
-                        'precio': self.product_tmpl_ids.list_price,
-                        'cantidad': False,
-                        'lote': False,
-                        'consumir_antes_de': False,
-                        'registro_sanitario': self.product_tmpl_ids.registro_sanitario,
-                        })
+                        if producto_plantilla.default_code not in dicc_products:
+                            dicc_products[producto_plantilla.default_code]=[]
+
+                        if producto_plantilla.default_code in dicc_products:
+                            dicc_products[producto_plantilla.default_code].append({
+                            'codigo':producto_plantilla.default_code,
+                            'descripcion': producto_plantilla.name,
+                            'codigo_barras': producto_plantilla.barcode,
+                            'uom': producto_plantilla.uom_id.name,
+                            'precio': producto_plantilla.list_price,
+                            'cantidad': False,
+                            'lote': False,
+                            'consumir_antes_de': False,
+                            'registro_sanitario': producto_plantilla.registro_sanitario,
+                            })
 
             new_value = None
             if dicc_products_price:
