@@ -50,3 +50,18 @@ class SaleOrder(models.Model):
         if self.env.user.has_group('sale.group_auto_done_setting'):
             self.action_done()
         return True
+
+    def onchange_partner_id(self):
+        # Llamar al onchange original
+        res = super(SaleOrder, self).onchange_partner_id()
+        
+        # Restaurar valores predeterminados si fueron cambiados
+        default_warehouse = self.env['ir.default'].get('sale.order', 'warehouse_id')
+        default_user = self.env['ir.default'].get('sale.order', 'user_id')
+
+        if default_warehouse:
+            self.warehouse_id = default_warehouse
+        if default_user:
+            self.user_id = default_user
+
+        return res
