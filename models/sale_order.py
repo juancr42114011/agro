@@ -51,6 +51,7 @@ class SaleOrder(models.Model):
             self.action_done()
         return True
 
+    @api.onchange('partner_id')
     def onchange_partner_id(self):
         # Llamar al onchange original
         res = super(SaleOrder, self).onchange_partner_id()

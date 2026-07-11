@@ -21,7 +21,7 @@
     'version': '0.5',
 
     # any module necessary for this one to work correctly
-    'depends': ['account','imporgesa','stock'],
+    'depends': ['account','imporgesa','sale_stock'],
 
     # always loaded
     'data': [
