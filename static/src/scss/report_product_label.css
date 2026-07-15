@@ -1,12 +1,16 @@
 .centered {
   width: 100%;
   text-align: center;
+  background: red;
+  color: green;
 }
 .centered td {
   font-size: 4px;
   height: 2px;
   vertical-align: center;
   text-align: center;
+  background: red;
+  color: green;
 }
 
 .logo_etiqueta {
