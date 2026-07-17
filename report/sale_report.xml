@@ -145,8 +145,8 @@
                                     <table class="centered">
                                         <tr><td style="font-weight: bold;"><br/>[<span t-esc="posicion['codigo']"/>] <span t-esc="posicion['descripcion']" style="align:center"/></td></tr>
                                         <tr>
-                                            <td style="text-align: left;">
-                                                <div t-esc="posicion['codigo_barras']" t-options="{'widget': 'barcode', 'height': 110, 'img_style': 'width:180px;height:40px;'}"/>
+                                            <td style="text-align: center;">
+                                                <div t-esc="posicion['codigo_barras']" t-options="{'widget': 'barcode', 'height': 210, 'img_style': 'width:280px;height:80px;'}"/>
                                             </td>
                                         </tr>
                                         <tr>
@@ -219,14 +219,31 @@
             <field name="binding_model_id" ref="stock.model_stock_production_lot"/>
             <field name="binding_type">report</field>
         </record>
-        
+
+        <record id="paperformat_label_code_etiqueta_2x1_pulgadas" model="report.paperformat">
+                <field name="name">Etiqueta 2 x 1 Pulgadas</field>
+                <field name="default" eval="True" />
+                <field name="format">custom</field>
+                <field name="page_height">25</field>
+                <field name="page_width">51</field>
+                <field name="orientation">Portrait</field>
+                <field name="margin_top">0</field>
+                <field name="margin_bottom">0</field>
+                <field name="margin_left">0</field>
+                <field name="margin_right">0</field>
+                <field name="disable_shrinking" eval="True"/>
+                <field name="dpi">203</field>
+                <field name="header_line" eval="False"/>
+                <field name="header_spacing">0</field>
+        </record>
+
         <record id="action_report_product_ali_mueble_label_01" model="ir.actions.report">
           <field name="name">2 x 1 Muebles Plegables</field>
           <field name="model">product.template</field>
           <field name="report_type">qweb-pdf</field>
           <field name="report_name">agro.etiqueta_ali_mueble_2_x_1_01</field>
           <field name="report_file">agro.etiqueta_ali_mueble_2_x_1_01</field>
-          <field name="paperformat_id" ref="imporgesa.paperformat_label_code_etiqueta_mueble_plegable_sheet"/>
+          <field name="paperformat_id" ref="agro.paperformat_label_code_etiqueta_2x1_pulgadas"/>
           <field name="print_report_name">'Products Labels - %s' % (object.name)</field>
           <field name="binding_model_id" eval="False"/>
           <field name="binding_type">report</field>
