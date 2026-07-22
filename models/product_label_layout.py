@@ -102,7 +102,7 @@ class ProductLabelLayout(models.TransientModel):
                         if producto_plantilla.default_code in dicc_products:
                             dicc_products[producto_plantilla.default_code].append({
                             'codigo':producto_plantilla.default_code,
-                            'descripcion': producto_plantilla.name,
+                            'descripcion': (producto_plantilla.name[:30] + '..') if len(producto_plantilla.name) > 30 else producto_plantilla.name,
                             'codigo_barras': producto_plantilla.barcode,
                             'uom': producto_plantilla.uom_id.name,
                             'precio': producto_plantilla.list_price,
