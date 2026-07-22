@@ -146,7 +146,7 @@
                                         <tr><td style="font-weight: bold;"><br/>[<span t-esc="posicion['codigo']"/>] <span t-esc="posicion['descripcion']" style="align:center"/></td></tr>
                                         <tr>
                                             <td style="text-align: center;">
-                                                <div t-esc="posicion['codigo_barras']" t-options="{'widget': 'barcode', 'height': 210, 'img_style': 'width:280px;height:80px;'}"/>
+                                                <div t-esc="posicion['codigo_barras']" t-options="{'widget': 'barcode', 'height': 190, 'img_style': 'width:280px;height:70px;'}"/>
                                             </td>
                                         </tr>
                                         <tr>
@@ -159,7 +159,7 @@
                                             <td><t t-if="posicion['lote']">Lote: <span t-esc="posicion['lote']" style="align:center"/></t></td>
                                         </tr>
                                         <tr>
-                                            <td><t t-if="posicion['precio']">Q <span t-esc="'%.2f' % posicion['precio']" style="align:center"/></t></td>
+                                            <td class="precio"><t t-if="posicion['precio']">Q <span t-esc="'%.2f' % posicion['precio']" style="align:center"/></t></td>
                                         </tr>
                                     </table>
                                 </div>
