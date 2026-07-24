@@ -57,12 +57,17 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).onchange_partner_id()
         
         # Restaurar valores predeterminados si fueron cambiados
-        default_warehouse = self.env['ir.default'].get('sale.order', 'warehouse_id')
-        default_user = self.env['ir.default'].get('sale.order', 'user_id')
+        
+        default_warehouse = self.env['ir.default'].with_company(self.company_id).get_model_defaults('sale.order')
+        if default_warehouse and 'warehouse_id' in default_warehouse:
+            self.warehouse_id = default_warehouse.get('warehouse_id')
+
+        default_user = self.env['ir.default'].with_company(self.company_id).get_model_defaults('sale.order')
+        if default_user and 'user_id' in default_user:
+            self.user_id = default_user.get('user_id')
 
         if default_warehouse:
-            self.warehouse_id = default_warehouse
+            self.warehouse_id = default_warehouse.get('warehouse_id')
         if default_user:
-            self.user_id = default_user
-
+            self.user_id = default_user.get('user_id')
         return res
