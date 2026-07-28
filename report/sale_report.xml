@@ -159,7 +159,7 @@
                                             <td><t t-if="posicion['lote']">Lote: <span t-esc="posicion['lote']" style="align:center"/></t></td>
                                         </tr>
                                         <tr>
-                                            <td class="precio"><t t-if="posicion['precio']">Q <span t-esc="'%.2f' % posicion['precio']" style="align:center"/></t></td>
+                                            <td class="precio"><t t-if="posicion['precio']">Q <span t-esc="{0:,.2f}' % posicion['precio']" style="align:center"/></t></td>
                                         </tr>
                                     </table>
                                 </div>
