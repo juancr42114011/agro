@@ -20,11 +20,18 @@ class SaleOrder(models.Model):
                 for line in sale.order_line:
                     if line.product_id.detailed_type =='product' and line.qty_available_today < line.product_uom_qty:
                         product_zero = True
-                        list_product.append(line.product_id.name)
+                        list_product.append(_(
+                            '%(product)s (Disponible: %(available)s %(uom)s, Solicitado: %(requested)s %(uom)s)'
+                        ) % {
+                            'product': line.product_id.display_name,
+                            'available': line.qty_available_today,
+                            'requested': line.product_uom_qty,
+                            'uom': line.product_uom.name,
+                        })
 
             if product_zero and len(list_product) > 0:
                 raise UserError(_(
-                    'Productos sin existencia 2: ' + ','.join(list_product) ))
+                    'Productos sin existencia suficiente:\n' + '\n'.join(list_product) ))
 
             if self.env.user.has_group('base.group_erp_manager') == False:
                 margen_venta = self.env['ir.config_parameter'].sudo().get_param('sale.margen_venta')
