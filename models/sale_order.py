@@ -24,7 +24,7 @@ class SaleOrder(models.Model):
 
             if product_zero and len(list_product) > 0:
                 raise UserError(_(
-                    'Productos sin existencia: ' + ','.join(list_product) ))
+                    'Productos sin existencia 2: ' + ','.join(list_product) ))
 
             if self.env.user.has_group('base.group_erp_manager') == False:
                 margen_venta = self.env['ir.config_parameter'].sudo().get_param('sale.margen_venta')
