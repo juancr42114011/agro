@@ -6,7 +6,7 @@ from odoo.exceptions import RedirectWarning, UserError, ValidationError, AccessE
 from datetime import timedelta, datetime, date
 from dateutil.relativedelta import relativedelta
 
-from odoo.tools.misc import xlsxwriter
+import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
 import base64
 import io
