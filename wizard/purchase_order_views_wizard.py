@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError, ValidationError
-from odoo.tools.misc import format_date, formatLang
+from odoo.exceptions import UserError, ValidationErrorformatLang
 from odoo import tools
 
 from collections import defaultdict
@@ -11,7 +10,7 @@ import json
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from odoo.tools.misc import xlsxwriter
+import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
 import base64
 import io

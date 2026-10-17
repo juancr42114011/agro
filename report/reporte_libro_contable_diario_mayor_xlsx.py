@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models,api
-from odoo.tools.misc import xlsxwriter
+import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
 import base64
 import io
 import xlrd
-from odoo.tools.misc import xlsxwriter
 from datetime import datetime
 
 class ReporteLibroContableDiarioXlsx(models.AbstractModel):

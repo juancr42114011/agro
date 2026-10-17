@@ -6,7 +6,7 @@ from calendar import monthrange,month_name
 from odoo.exceptions import UserError
 from odoo import api, models, _
 import sys
-from odoo.tools.misc import xlsxwriter
+import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
 from datetime import datetime, timedelta
 

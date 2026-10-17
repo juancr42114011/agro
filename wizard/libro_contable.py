@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 import base64
 import io
 import xlrd
-from odoo.tools.misc import xlsxwriter
+import xlsxwriter
 
 class LibroContableReport(models.TransientModel):
     _name = "libro_contable.report"
