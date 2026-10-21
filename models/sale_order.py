@@ -18,7 +18,7 @@ class SaleOrder(models.Model):
             list_product = []
             if sale.order_line:
                 for line in sale.order_line:
-                    if line.product_id.detailed_type =='product' and line.qty_available_today < line.product_uom_qty:
+                    if line.product_id.is_storable and line.qty_available_today < line.product_uom_qty:
                         product_zero = True
                         list_product.append(_(
                             '%(product)s (Disponible: %(available)s %(uom)s, Solicitado: %(requested)s %(uom)s)'

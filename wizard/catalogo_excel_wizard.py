@@ -382,7 +382,7 @@ class ImportarCatalogosExcelWizard(models.TransientModel):
 					])
 					for c in carga:
 						cargado = 'cargado'
-						carga_valor += c.qty_done
+						carga_valor += c.quantity
 
 					descarga = self.env["stock.move.line"].search([
 							('location_id','=',8),
@@ -392,7 +392,7 @@ class ImportarCatalogosExcelWizard(models.TransientModel):
 					])
 					for d in descarga:
 						cargado = 'cargado/descargado'
-						carga_valor -= d.qty_done
+						carga_valor -= d.quantity
 
 
 

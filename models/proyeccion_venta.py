@@ -38,12 +38,6 @@ class ProyeccionVenta(models.Model):
     _mail_post_access = 'read'
     _check_company_auto = True
     
-    READONLY_STATES = {
-        'purchase': [('readonly', True)],
-        'done': [('readonly', True)],
-        'cancel': [('readonly', True)],
-    }
-    
     name = fields.Char(string='Number', 
                        copy=False, 
                        readonly=True, 
@@ -56,8 +50,6 @@ class ProyeccionVenta(models.Model):
         string='Date',
         required=True,
         index=True,
-        readonly=True,
-        states={'draft': [('readonly', False)]},
         copy=False,
         tracking=True,
         default=fields.Date.context_today
@@ -68,15 +60,11 @@ class ProyeccionVenta(models.Model):
         [(str(x), str(x)) for x in range(2020, date.today().year + 3)],
         string='Año',
         default=str(date.today().year),
-        readonly=True,
-        states={'draft': [('readonly', False)]},
     )
     year_base = fields.Selection(
         [(str(x), str(x)) for x in range(2020, date.today().year + 3)],
         string='Año Base',
         default=str(date.today().year),
-        readonly=True,
-        states={'draft': [('readonly', False)]},
     )
     state = fields.Selection(selection=[
             ('draft', 'Draft'),
@@ -84,18 +72,17 @@ class ProyeccionVenta(models.Model):
             ('cancel', 'Cancelled'),
         ], string='Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
-    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, states=READONLY_STATES, default=lambda self: self.env.company.id)
-    currency_id = fields.Many2one('res.currency', 'Currency', required=True, states=READONLY_STATES,
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company.id)
+    currency_id = fields.Many2one('res.currency', 'Currency', required=True,
         default=lambda self: self.env.company.currency_id.id)
-    order_line = fields.One2many('proyeccion.venta.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
+    order_line = fields.One2many('proyeccion.venta.line', 'order_id', string='Order Lines', copy=True)
     user_id = fields.Many2one(
         'res.users', string='Usuario', index=True, tracking=True,
         default=lambda self: self.env.user, check_company=True, readonly=True)
     a_presupuestar = fields.Boolean(string="A Prespuestar", help="A presupuetar.")
     archivo = fields.Binary('Archivo')
     porcentaje_incremento = fields.Float(
-        readonly=True,
-        states={'draft': [('readonly', False)]}, string='%', help="Porcentaje de incremento")
+        string='%', help="Porcentaje de incremento")
     
     @api.model
     def create(self, vals):
@@ -172,7 +159,7 @@ class ProyeccionVenta(models.Model):
         dominio = []
         #dominio = [('id','in',(4,585,406,404,437))]
         #dominio = [('id','in',(4,))]
-        dominio += [('detailed_type','in',('product',)),('a_presupuestar','=',True)]
+        dominio += [('is_storable','=',True),('a_presupuestar','=',True)]
         #dominio += [('id','in',(768,))]
         productos = self.env['product.product'].search(dominio)
         self.date_start = datetime(year=int(self.year_base), month=1, day=1).date()
