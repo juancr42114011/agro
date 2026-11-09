@@ -578,10 +578,10 @@ class ImportarCatalogosExcelWizard(models.TransientModel):
 					}
 				product_id = self._find_products(producto_line['producto_id'])
 				if product_id:
-					producto['product_id'] = product_id.id
+					producto['product_id'] = product_id.product_variant_id.id
 					producto['name'] = producto_line['descripcion']
 					producto['product_qty'] = producto_line['cantidad']
-					producto['product_uom'] = product_id.uom_po_id.id
+					producto['product_uom_id'] = product_id.uom_id.id
 					producto['price_unit'] = producto_line['precio']
 					producto['date_planned'] = datetime.today()
 					producto['order_id'] = int(float(producto_line['orden_id']))

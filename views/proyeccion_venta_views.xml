@@ -8,7 +8,7 @@
 
     <menuitem id="menu_proyeccion_venta_list"
         action="action_proyeccion_venta_list"
-        parent="account.menu_finance_entries_management"/>
+        parent="account.menu_finance_entries"/>
 
     <record id="proyeccion_venta_form" model="ir.ui.view">
         <field name="name">proyeccion.venta.form</field>

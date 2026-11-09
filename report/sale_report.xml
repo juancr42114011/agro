@@ -169,18 +169,6 @@
                 </t>
         </template>
 
-        <record id="action_report_sale_ali_nutri_label_01" model="ir.actions.report">
-            <field name="name">3 x 2 Alimentos Nutricionales</field>
-            <field name="model">sale.order</field>
-            <field name="report_type">qweb-pdf</field>
-            <field name="report_name">agro.etiqueta_ali_nu_3_x_2_01</field>
-            <field name="report_file">agro.etiqueta_ali_nu_3_x_2_01</field>
-            <field name="paperformat_id" ref="imporgesa.paperformat_label_code_price_sheet"/>
-            <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)</field>
-            <field name="binding_model_id" ref="model_sale_order"/>
-            <field name="binding_type">report</field>
-        </record>
-
         <record id="paperformat_label_sale_ali_nutri_3x2" model="report.paperformat">
             <field name="name">Etiqueta 3 x 2 Alimentos Nutricionales</field>
             <field name="default" eval="True" />
@@ -196,13 +184,26 @@
             <field name="dpi">96</field>
         </record>
 
+        <record id="action_report_sale_ali_nutri_label_01" model="ir.actions.report">
+            <field name="name">3 x 2 Alimentos Nutricionales</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">agro.etiqueta_ali_nu_3_x_2_01</field>
+            <field name="report_file">agro.etiqueta_ali_nu_3_x_2_01</field>
+            <field name="paperformat_id" ref="paperformat_label_sale_ali_nutri_3x2"/>
+            <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_sale_order"/>
+            <field name="binding_type">report</field>
+        </record>
+
+
         <record id="action_report_product_ali_nutri_label_01" model="ir.actions.report">
           <field name="name">3 x 2 Alimentos Nutricionales</field>
           <field name="model">product.template</field>
           <field name="report_type">qweb-pdf</field>
           <field name="report_name">agro.etiqueta_ali_nu_3_x_2_02</field>
           <field name="report_file">agro.etiqueta_ali_nu_3_x_2_02</field>
-          <field name="paperformat_id" ref="imporgesa.paperformat_label_code_price_sheet"/>
+          <field name="paperformat_id" ref="paperformat_label_sale_ali_nutri_3x2"/>
           <field name="print_report_name">'Products Labels - %s' % (object.name)</field>
           <field name="binding_model_id" eval="False"/>
           <field name="binding_type">report</field>
@@ -210,13 +211,13 @@
 
         <record id="action_report_lot_label_ali_nutri_03" model="ir.actions.report">
             <field name="name">Lot/Serial Number 3x2 (PDF)</field>
-            <field name="model">stock.production.lot</field>
+            <field name="model">stock.lot</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">agro.report_lot_label_3x2</field>
             <field name="report_file">agro.report_lot_label_3x2</field>
             <field name="paperformat_id" ref="paperformat_label_sale_ali_nutri_3x2"/>
             <field name="print_report_name">'Lot-Serial - %s' % object.name</field>
-            <field name="binding_model_id" ref="stock.model_stock_production_lot"/>
+            <field name="binding_model_id" ref="stock.model_stock_lot"/>
             <field name="binding_type">report</field>
         </record>
 

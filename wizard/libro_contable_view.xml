@@ -41,7 +41,7 @@
     <menuitem
     id="menu_libro_contable"
     name="Libro Contable"
-    parent="account_reports.account_reports_partners_reports_menu"
+    parent="account.account_reports_partners_reports_menu"
     action="action_libro_contable_menu"
     groups="account.group_account_user"
    />

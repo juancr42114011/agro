@@ -8,11 +8,12 @@ class SaleOrder(models.Model):
     
     guia_ganado = fields.Char(string='Guia Ganado', help="Guia especial de despacho de ganado", tracking=True)
     
-    def action_confirm(self):
+    def _validar_confirmacion(self):
+        # Reemplaza la validación de imporgesa (no llama a super)
         for sale in self:
             #Se agrega esta validacion, si la empresa es (Ganadería el Manantial, S. A.), entonces no se
             #valida la existencia, porque no tiene, despues me indica Julissa que cargaran existencia.
-            if self.company_id.id == 26:
+            if sale.company_id.id == 26:
                 continue
             product_zero = False
             list_product = []
@@ -26,7 +27,7 @@ class SaleOrder(models.Model):
                             'product': line.product_id.display_name,
                             'available': line.qty_available_today,
                             'requested': line.product_uom_qty,
-                            'uom': line.product_uom.name,
+                            'uom': line.product_uom_id.name,
                         })
 
             if product_zero and len(list_product) > 0:
@@ -37,26 +38,6 @@ class SaleOrder(models.Model):
                 margen_venta = self.env['ir.config_parameter'].sudo().get_param('sale.margen_venta')
                 if float(margen_venta) > 0:
                     self.sale_price_verify(sale,float(margen_venta))
-                    
-        #Comienza el verdadero condi del action_confirm  
-        if self._get_forbidden_state_confirm() & set(self.mapped('state')):
-            raise UserError(_(
-                'It is not allowed to confirm an order in the following states: %s'
-            ) % (', '.join(self._get_forbidden_state_confirm())))
-
-        for order in self.filtered(lambda order: order.partner_id not in order.message_partner_ids):
-            order.message_subscribe([order.partner_id.id])
-        self.write(self._prepare_confirmation_values())
-
-        # Context key 'default_name' is sometimes propagated up to here.
-        # We don't need it and it creates issues in the creation of linked records.
-        context = self._context.copy()
-        context.pop('default_name', None)
-
-        self.with_context(context)._action_confirm()
-        if self.env.user.has_group('sale.group_auto_done_setting'):
-            self.action_done()
-        return True
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
