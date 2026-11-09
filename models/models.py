@@ -23,7 +23,7 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
     
     def _create_invoices(self, grouped=False, final=False, date=None):
-        invoice = super(SaleOrder, self)._create_invoices()
+        invoice = super(SaleOrder, self)._create_invoices(grouped=grouped, final=final, date=date)
         invoice.set_diario_metodopago()
         return invoice
 

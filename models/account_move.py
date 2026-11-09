@@ -23,7 +23,7 @@ class AccountMove(models.Model):
                             record.journal_id = self.env.ref('agro.sale_fa_ve_al_nu_co').id
                         continue
             
-            defaults = self.env['ir.default'].with_company(record.company_id).get_model_defaults('account.move')
+            defaults = self.env['ir.default'].with_company(record.company_id)._get_model_defaults('account.move')
             if defaults and 'journal_id' in defaults:
                 record.journal_id = defaults.get('journal_id')
 

@@ -41,21 +41,9 @@ class SaleOrder(models.Model):
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
-        # Llamar al onchange original
-        res = super(SaleOrder, self).onchange_partner_id()
-        
-        # Restaurar valores predeterminados si fueron cambiados
-        
-        default_warehouse = self.env['ir.default'].with_company(self.company_id).get_model_defaults('sale.order')
-        if default_warehouse and 'warehouse_id' in default_warehouse:
-            self.warehouse_id = default_warehouse.get('warehouse_id')
-
-        default_user = self.env['ir.default'].with_company(self.company_id).get_model_defaults('sale.order')
-        if default_user and 'user_id' in default_user:
-            self.user_id = default_user.get('user_id')
-
-        if default_warehouse:
-            self.warehouse_id = default_warehouse.get('warehouse_id')
-        if default_user:
-            self.user_id = default_user.get('user_id')
-        return res
+        # Restaurar valores predeterminados si fueron cambiados por el cliente
+        defaults = self.env['ir.default'].with_company(self.company_id)._get_model_defaults('sale.order')
+        if 'warehouse_id' in defaults:
+            self.warehouse_id = defaults['warehouse_id']
+        if 'user_id' in defaults:
+            self.user_id = defaults['user_id']
