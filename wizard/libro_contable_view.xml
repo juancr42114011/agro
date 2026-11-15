@@ -43,7 +43,7 @@
     name="Libro Contable"
     parent="account_reports.account_reports_partners_reports_menu"
     action="action_libro_contable_menu"
-    groups="account.group_account_user"
+    groups="-account.group_account_user,account.group_account_manager"
    />
 
 </odoo>
