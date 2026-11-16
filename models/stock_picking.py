@@ -18,8 +18,9 @@ class StockPicking(models.Model):
                 continue
 
             needed_qty_by_product = {}
-            for move in picking.move_lines.filtered(lambda m: m.state not in ('done', 'cancel')):
-                qty = move.quantity_done or move.product_uom_qty
+            # Odoo 17+: move_lines -> move_ids, quantity_done -> quantity
+            for move in picking.move_ids.filtered(lambda m: m.state not in ('done', 'cancel')):
+                qty = move.quantity or move.product_uom_qty
                 if not qty:
                     continue
                 qty_in_uom = move.product_uom._compute_quantity(qty, move.product_id.uom_id)
